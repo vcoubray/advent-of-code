@@ -4,18 +4,21 @@ package fr.vco.adventofcode
 fun main() {
     val input = getInputReader("/inputAoC2.txt")
 
-    var opCode = input.readText().trim().split(",").map{it.toInt()}
-
-
+    val opCode = input.readText().trim().split(",").map{it.toInt()}
 
     println("Part 1 : ${opCode.toMutableList().exec(12,2)}")
 
-    println(opCode)
-
-
+    val expected = 19690720
+    repeat (99) { noun ->
+        repeat ( 99 ) { verb ->
+            if (expected == opCode.toMutableList().exec(noun,verb)){
+                println("Part 2 : ${100 * noun + verb}")
+                return
+            }
+        }
+    }
 
 }
-
 
 fun MutableList<Int>.exec(val1 : Int, val2 : Int) : Int {
     this[1] = val1
