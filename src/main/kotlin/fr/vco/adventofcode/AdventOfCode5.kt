@@ -5,14 +5,17 @@ fun main() {
     val input = getInputReader("/inputAoC5.txt")
     val opCodeStr = input.readText().trim().split(",").map { it.toInt() }
 
-    val opCodePart1 = OpCode(opCodeStr.toMutableList())
-    val inputPart1 = "1"
-    println("Part 1 : ${opCodePart1.exec(inputPart1)}")
 
-    val opCodePar2 = OpCode(opCodeStr.toMutableList())
-    val inputPart2 = "5"
-    println("Part 2 : ${opCodePar2.exec(inputPart2)}")
+    val opCode = OpCode(opCodeStr)
+    val streamPart1 = OpCodeStream(listOf(1))
+    opCode.exec(streamPart1)
+    println("Part 1 : ${streamPart1.getOutput()}")
+
+    val streamPart2 = OpCodeStream(listOf(5))
+    opCode.exec(streamPart2)
+    println("Part 2 : ${streamPart2.getOutput()}")
 
 }
+
 
 
