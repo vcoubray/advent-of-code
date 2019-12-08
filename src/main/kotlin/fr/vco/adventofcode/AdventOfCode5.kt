@@ -5,15 +5,22 @@ fun main() {
     val input = getInputReader("/inputAoC5.txt")
     val opCodeStr = input.readText().trim().split(",").map { it.toInt() }
 
+    val stream = OpCodeStream()
+    val opCode = OpCode(opCodeStr,stream)
+    stream.input.add(1)
+    val resultPart1 = StringBuilder()
+    while(!opCode.isEnded()) {
+        opCode.exec()
+        resultPart1.append("${stream.output.poll()?:""} ")
+    }
+    println("Part 1 : $resultPart1")
 
-    val opCode = OpCode(opCodeStr)
-    val streamPart1 = OpCodeStream(listOf(1))
-    opCode.exec(streamPart1)
-    println("Part 1 : ${streamPart1.getOutput()}")
 
-    val streamPart2 = OpCodeStream(listOf(5))
-    opCode.exec(streamPart2)
-    println("Part 2 : ${streamPart2.getOutput()}")
+
+    opCode.restart()
+    stream.input.add(5)
+    opCode.exec()
+    println("Part 2 : ${stream.output.poll()}")
 
 }
 

@@ -3,50 +3,71 @@ package fr.vco.adventofcode
 import kotlin.math.max
 
 fun main() {
-    val str = "3,23,3,24,1002,24,10,24,1002,23,-1,23,101,5,23,23,1,24,23,23,4,23,99,0,0".split(",").map{it.toInt()}
-    val opCodeTest = OpCode(str)
-
-    println("Part 1 Test : ${getMaxSignal(opCodeTest)}")
-
 
     val input = getInputReader("/inputAoC7.txt")
-    val opCodeStr = input.readText().trim().split(",").map { it.toInt() }
-    val opCode = OpCode(opCodeStr)
+    val intCode = input.readText().trim().split(",").map { it.toInt() }
 
-    println("Part 1 Test : ${getMaxSignal(opCode)}")
+    val settingsPart1 = listOf(0, 1, 2, 3, 4)
+    val settingsPart2 = listOf(5, 6, 7, 8, 9)
 
+    println("Part 1 : ${getMaxSignal(intCode, settingsPart1, false)}")
+    println("Part 2 : ${getMaxSignal(intCode, settingsPart2, true)}")
 }
 
-fun getMaxSignal(opCode: OpCode): Int{
+fun getMaxSignal(intCode: List<Int>, availableSettings: List<Int>, loop: Boolean): Int {
+    val amplifiers = List(5) { OpCode(intCode, OpCodeStream()) }
+    val allSettings = getAllSettings(availableSettings)
     var maxSignal = 0
-    repeat (5 ) {a ->
-        repeat (5 ) {b ->
-            repeat (5 ) {c ->
-                repeat (5 ) {d ->
-                    repeat (5 ) {e ->
-                        val settings = setOf(a,b,c,d,e)
-                        if (settings.size == 5) {
-                            val result = execWithSettings(opCode, settings.toList())
-                            maxSignal = max(result, maxSignal)
-                        }
-                    }
-                }
-            }
+    allSettings.forEach { settings ->
+        amplifiers.forEachIndexed { i, amp ->
+            amp.restart()
+            amp.stream.input.add(settings[i])
         }
+        val result = if (loop) execAmplifiersLoop(amplifiers, 0)
+        else execAmplifiers(amplifiers, 0)
+        maxSignal = max(result, maxSignal)
     }
     return maxSignal
 }
 
-fun execWithSettings(opCode : OpCode, settings : List<Int>) : Int {
 
-    var input = 0
-    settings.forEach { setting ->
-        val stream = OpCodeStream(listOf(setting,input))
-        opCode.exec(stream)
-        input = stream.getOutput().first!!
+fun execAmplifiers(amplifiers: List<OpCode>, input: Int): Int {
+    var signal = input
+    amplifiers.forEachIndexed { i, amp ->
+        signal = execAmplifier(amp, signal) ?: signal
     }
-    return input
+    return signal
 }
 
+fun execAmplifiersLoop(amplifiers: List<OpCode>, input: Int): Int {
+    var signal = input
+    while (!amplifiers[0].isEnded()) {
+        signal = execAmplifiers(amplifiers, signal)
+    }
+    return signal
+}
 
+fun execAmplifier(opCode: OpCode, input: Int): Int? {
+    opCode.stream.input.add(input)
+    opCode.exec()
+    return opCode.stream.output.poll()
+}
 
+fun getAllSettings(settings: List<Int>): List<List<Int>> {
+    val allSettings = mutableListOf<List<Int>>()
+    permute(settings, listOf(), allSettings)
+    return allSettings
+}
+
+fun permute(settings: List<Int>, permutation: List<Int>, allSettings: MutableList<List<Int>>) {
+
+    if (settings.isEmpty()) {
+        allSettings.add(permutation)
+        return
+    }
+    for (i in settings.indices) {
+        val permuteInt = settings[i]
+        val ros = settings.take(i) + settings.takeLast(settings.size - (i + 1))
+        permute(ros, permutation + permuteInt, allSettings)
+    }
+}

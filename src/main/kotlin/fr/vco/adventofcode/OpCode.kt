@@ -3,20 +3,29 @@ package fr.vco.adventofcode
 import java.util.*
 
 
-class OpCode(private val opCodeOrigin: List<Int>) {
+class OpCode(private val opCodeOrigin: List<Int>, val stream: OpCodeStream) {
     private var cursor = 0
-    private lateinit var opCode : MutableList<Int>
+    private var opCode = opCodeOrigin.toMutableList()
+    private var paused = false
 
-    fun exec(stream : OpCodeStream) {
+    fun restart(){
         cursor = 0
         opCode = opCodeOrigin.toMutableList()
-        while (cursor < opCode.size) {
+        stream.clear()
+    }
+
+    fun isEnded() = cursor >= opCode.size
+
+    fun exec() {
+        paused = false
+        while (!paused && !isEnded()) {
             val ins= getInstruction()
-            execInstuction(ins,stream)
+            execInstuction(ins)
         }
     }
 
-    fun execInstuction(ins : Instruction, stream : OpCodeStream) {
+
+    fun execInstuction(ins : Instruction) {
         when (ins.ins) {
             99 -> cursor = opCode.size
             1 -> {
@@ -38,6 +47,7 @@ class OpCode(private val opCodeOrigin: List<Int>) {
             4 -> {
                 val param = getParamIndex(ins.mode1)
                 stream.write(opCode[param])
+                paused = true
             }
             5 -> {
                 val param1 = getParamIndex(ins.mode1)
@@ -90,9 +100,9 @@ data class Instruction(
 )
 
 
-class OpCodeStream(input: List<Int>)  {
-    private val input = LinkedList(input)
-    private val output = LinkedList<Int>()
+class OpCodeStream()  {
+    val input = LinkedList<Int>()
+    val output = LinkedList<Int>()
 
     fun read() = input.poll()!!
 
@@ -100,6 +110,9 @@ class OpCodeStream(input: List<Int>)  {
         output.add(value)
     }
 
-    fun getOutput() = output
+    fun clear() {
+        input.removeIf{true}
+        output.removeIf{true}
+    }
 
 }
