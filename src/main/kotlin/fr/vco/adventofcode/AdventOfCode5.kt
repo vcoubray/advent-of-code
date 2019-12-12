@@ -3,7 +3,7 @@ package fr.vco.adventofcode
 fun main() {
 
     val input = getInputReader("/inputAoC5.txt")
-    val opCodeStr = input.readText().trim().split(",").map { it.toInt() }
+    val opCodeStr = input.readText().trim().split(",").map { it.toLong() }
 
     val stream = OpCodeStream()
     val opCode = OpCode(opCodeStr,stream)

@@ -5,7 +5,7 @@ import kotlin.math.max
 fun main() {
 
     val input = getInputReader("/inputAoC7.txt")
-    val intCode = input.readText().trim().split(",").map { it.toInt() }
+    val intCode = input.readText().trim().split(",").map { it.toLong() }
 
     val settingsPart1 = listOf(0, 1, 2, 3, 4)
     val settingsPart2 = listOf(5, 6, 7, 8, 9)
@@ -14,14 +14,14 @@ fun main() {
     println("Part 2 : ${getMaxSignal(intCode, settingsPart2, true)}")
 }
 
-fun getMaxSignal(intCode: List<Int>, availableSettings: List<Int>, loop: Boolean): Int {
+fun getMaxSignal(intCode: List<Long>, availableSettings: List<Int>, loop: Boolean): Long {
     val amplifiers = List(5) { OpCode(intCode, OpCodeStream()) }
     val allSettings = getAllSettings(availableSettings)
-    var maxSignal = 0
+    var maxSignal = 0L
     allSettings.forEach { settings ->
         amplifiers.forEachIndexed { i, amp ->
             amp.restart()
-            amp.stream.input.add(settings[i])
+            amp.stream.input.add(settings[i].toLong())
         }
         val result = if (loop) execAmplifiersLoop(amplifiers, 0)
         else execAmplifiers(amplifiers, 0)
@@ -31,7 +31,7 @@ fun getMaxSignal(intCode: List<Int>, availableSettings: List<Int>, loop: Boolean
 }
 
 
-fun execAmplifiers(amplifiers: List<OpCode>, input: Int): Int {
+fun execAmplifiers(amplifiers: List<OpCode>, input: Long): Long {
     var signal = input
     amplifiers.forEachIndexed { i, amp ->
         signal = execAmplifier(amp, signal) ?: signal
@@ -39,7 +39,7 @@ fun execAmplifiers(amplifiers: List<OpCode>, input: Int): Int {
     return signal
 }
 
-fun execAmplifiersLoop(amplifiers: List<OpCode>, input: Int): Int {
+fun execAmplifiersLoop(amplifiers: List<OpCode>, input: Long): Long {
     var signal = input
     while (!amplifiers[0].isEnded()) {
         signal = execAmplifiers(amplifiers, signal)
@@ -47,7 +47,7 @@ fun execAmplifiersLoop(amplifiers: List<OpCode>, input: Int): Int {
     return signal
 }
 
-fun execAmplifier(opCode: OpCode, input: Int): Int? {
+fun execAmplifier(opCode: OpCode, input: Long): Long? {
     opCode.stream.input.add(input)
     opCode.exec()
     return opCode.stream.output.poll()
