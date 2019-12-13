@@ -1,4 +1,4 @@
-package fr.vco.adventofcode
+package fr.vco.adventofcode.y2019
 
 fun main() {
 

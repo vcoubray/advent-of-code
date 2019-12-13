@@ -1,4 +1,4 @@
-package fr.vco.adventofcode
+package fr.vco.adventofcode.y2019
 
 import java.lang.IllegalArgumentException
 import java.util.*
@@ -11,7 +11,6 @@ class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
     private var relativeBase = 0L
     private var isEnded = false
 
-
     private fun generateOpCode() =
         opCodeOrigin.mapIndexed{index, it -> index.toLong() to it}.toMap().toMutableMap()
 
@@ -19,7 +18,6 @@ class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
         if(!opCode.containsKey(index)) opCode[index] = 0
         return opCode[index]!!
     }
-
 
     fun restart() {
         cursor = 0
@@ -37,7 +35,6 @@ class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
             execInstuction(ins)
         }
     }
-
 
     private fun execInstuction(ins: Instruction) {
         when (ins.ins) {
@@ -107,8 +104,6 @@ class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
             2 -> get(cursor++) + relativeBase
             else -> throw IllegalArgumentException("Unknown parameter mode : $paramMode")
         }
-
-
 }
 
 data class Instruction(
