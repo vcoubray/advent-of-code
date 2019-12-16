@@ -6,12 +6,12 @@ import java.util.*
 
 class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
     private var cursor = 0L
-    private var opCode = generateOpCode()
+    private var opCode = initOpCode()
     private var paused = false
     private var relativeBase = 0L
     private var isEnded = false
 
-    private fun generateOpCode() =
+    private fun initOpCode() =
         opCodeOrigin.mapIndexed{index, it -> index.toLong() to it}.toMap().toMutableMap()
 
     private fun get(index :Long) : Long {
@@ -20,8 +20,9 @@ class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
     }
 
     fun restart() {
-        cursor = 0
-        opCode = generateOpCode()
+        cursor = 0L
+        relativeBase = 0L
+        opCode = initOpCode()
         stream.clear()
         isEnded = false
     }
