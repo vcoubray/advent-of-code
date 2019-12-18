@@ -8,25 +8,57 @@ fun main() {
     val input = getInputReader("/2019/inputDay12.txt")
 
     val moons = mutableListOf<Moon>()
-    input.forEachLine{line->
-        val coords = line.split(",").map{it.toInt()}
+    input.forEachLine { line ->
+        val coords = line.split(",").map { it.toInt() }
         moons.add(Moon(coords))
     }
-
-    moons.move(1000)
-    println("Part 1 : ${moons.sumBy { it.getEnergy() }}")
+    val orbits = Orbits(moons)
+    println("Part 1 : ${orbits.getEnergy(1000)}")
+    println("Part 2 : ${orbits.cycle()}")
 
 }
 
-fun List<Moon>.move(steps: Int) {
-    repeat(steps) {
-        this.move()
-    }
-}
 
 fun List<Moon>.move() {
     this.forEach { moon -> moon.applyGravities(this) }
     this.forEach { moon -> moon.move() }
+}
+
+
+class Orbits(val originMoons: List<Moon>) {
+    private var repeatX: Long? = null
+    private var repeatY: Long? = null
+    private var repeatZ: Long? = null
+
+    fun getEnergy(steps: Int): Int {
+        val moons = originMoons.map { Moon(it.pos.copy(), it.vel.copy()) }
+        repeat(steps) {
+            moons.move()
+        }
+        return moons.sumBy { it.getEnergy() }
+    }
+
+    fun cycle(): Long {
+        val moons = originMoons.map { Moon(it.pos.copy(), it.vel.copy()) }
+        var step = 0L
+        while (repeatX == null || repeatY == null || repeatZ == null) {
+            step++
+            moons.move()
+            if (repeatX == null && isSameOriginAxe(moons) { it.x }) repeatX = step
+            if (repeatY == null && isSameOriginAxe(moons) { it.y }) repeatY = step
+            if (repeatZ == null && isSameOriginAxe(moons) { it.z }) repeatZ = step
+        }
+        return PPMC(PPMC(repeatX!!, repeatY!!), repeatZ!!)
+    }
+
+
+    fun isSameOriginAxe(moons: List<Moon>, axe: (Coord3D) -> Int): Boolean {
+        moons.forEachIndexed { i, it ->
+            if (axe(it.vel) != axe(originMoons[i].vel) || axe(it.pos) != axe(originMoons[i].pos)) return false
+        }
+        return true
+    }
+
 }
 
 data class Coord3D(
@@ -76,3 +108,15 @@ fun calcAttraction(moon1: Coord3D, moon2: Coord3D, op: (Coord3D) -> Int) =
         op(moon1) > op(moon2) -> -1
         else -> 0
     }
+
+
+fun PPDC(a: Long, b: Long): Long {
+    if (a < b) return PPDC(b, a)
+    if(b == 0L) return a
+    return  PPDC(b, a % b)
+}
+
+fun PPMC(a: Long, b: Long): Long {
+    val ppdc = PPDC(a, b)
+    return a * b / ppdc
+}
