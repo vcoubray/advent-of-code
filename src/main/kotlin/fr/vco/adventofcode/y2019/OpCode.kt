@@ -49,13 +49,19 @@ class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
                 opCode[param3] = get(param1) * get(param2)
             }
             3 -> {
-                val (param) = getParamIndexes(1, ins.modes)
-                opCode[param] = stream.read()
+                if (stream.hasInput()) {
+                    val (param) = getParamIndexes(1, ins.modes)
+                    opCode[param] = stream.read()
+                } else {
+                    println("Input required")
+                    cursor--
+                    paused = true
+                }
             }
             4 -> {
                 val (param) = getParamIndexes(1, ins.modes)
                 stream.write(get(param))
-                paused = true
+                //paused = true
             }
             5 -> {
                 val (param1, param2) = getParamIndexes(2, ins.modes)
@@ -116,6 +122,8 @@ data class Instruction(
 class OpCodeStream {
     val input = LinkedList<Long>()
     val output = LinkedList<Long>()
+
+    fun hasInput() = input.isNotEmpty()
 
     fun read() = input.poll()!!
 
