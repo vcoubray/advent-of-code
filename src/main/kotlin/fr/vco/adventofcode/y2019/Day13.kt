@@ -9,63 +9,122 @@ const val BLOCK = 2
 const val PADDLE = 3
 const val BALL = 4
 
-data class Tile(val x : Int, val y :Int, val type : Int)
+data class Tile(val x: Int, val y: Int, val type: Int)
 
-fun main () {
+fun main() {
     val input = getInputReader("/2019/inputDay13.txt")
-    val intCode = input.readText().trim().split(",").map{it.toLong()}.toMutableList()
-
-    val stream = OpCodeStream()
-    val opCode = OpCode(intCode,stream)
-    opCode.exec()
+    val intCode = input.readText().trim().split(",").map { it.toLong() }.toMutableList()
 
 
-   val tiles = constructGrid(stream)
+    val game = Game(intCode)
 
-    println("Part 1 : ${tiles.filter{it.type == BLOCK}.size}")
-    printScreen(tiles)
-    intCode[0]=2
-    val opCode2 = OpCode(intCode,stream)
+    game.start()
+    println("Part 1 : ${game.grid.flatten().filter { it.type == BLOCK }.size}")
 
-    while(!opCode2.isEnded()) {
-        opCode2.exec()
-        stream.input.add(1)
-        //println(constructGrid(stream))
-        printScreen(constructGrid(stream))
-    }
+    game.start(2)
+    println("Part 2 : ${game.score}")
+
 
 }
 
-fun constructGrid(stream : OpCodeStream) : List<Tile>{
+class Game(val originalIntCode: List<Long>) {
 
-    val tiles = mutableListOf<Tile>()
-    while(stream.output.isNotEmpty()) {
-        val x = stream.output.poll()?.toInt()
-        val y = stream.output.poll()?.toInt()
-        val type = stream.output.poll()?.toInt()
-        if (x != null && y != null && type != null)
-            tiles.add(Tile(x, y, type))
+    val grid = mutableListOf<MutableList<Tile>>()
+    lateinit var opCode: OpCode
+    var score = 0
+    lateinit var ball : Tile
+    lateinit var paddle : Tile
+
+    fun start(coin: Int? = null,print: Boolean = false) {
+        score = 0
+        grid.clear()
+        val intCode = originalIntCode.toMutableList()
+        coin?.let { intCode[0] = it.toLong() }
+        opCode = OpCode(intCode, OpCodeStream())
+        initGrid()
+        if (print)printScreen()
+
+        while (!opCode.isEnded()) {
+            play()
+            if (print)printScreen()
+        }
     }
-    return tiles
-}
+
+    fun play() {
+        opCode.stream.input.add(movePaddle(ball.x).toLong())
+        opCode.exec()
+        updateGrid()
 
 
-fun printScreen(tiles : List<Tile>){
+    }
 
-    val sb = StringBuilder()
-    val map = tiles.groupBy{it.y}
-    map.toSortedMap().values.forEach{
-        val line = it.sortedBy{panel -> panel.x}.joinToString(""){t ->
-            when(t.type) {
-                WALL -> "#"
-                PADDLE -> "_"
-                BLOCK -> "x"
-                BALL -> "O"
-                else -> " "
+    fun initGrid() {
+        opCode.exec()
+        val tiles = getTilesFromOutput()
+        val map = tiles.groupBy { it.y }
+        map.toSortedMap().values.forEach {
+            grid.add(it.sortedBy { panel -> panel.x }.toMutableList())
+        }
+    }
+
+    private fun getTilesFromOutput(): List<Tile> {
+        val tiles = mutableListOf<Tile>()
+        val output = opCode.stream.output
+        while (output.isNotEmpty()) {
+            val x = output.poll()?.toInt()
+            val y = output.poll()?.toInt()
+            val type = output.poll()?.toInt()
+            if (x != null && y != null && type != null) {
+                val tile = Tile(x, y, type)
+                if (type == BALL) ball = tile
+                if (type == PADDLE) paddle = tile
+                if (x < 0) score = type
+                else tiles.add(tile)
             }
         }
-        sb.append(line).append("\n")
+        return tiles
     }
-    println(sb)
+
+
+    fun updateGrid() {
+        val tiles = getTilesFromOutput()
+        tiles.forEach{
+            grid[it.y][it.x] = it
+        }
+    }
+
+
+    fun printScreen() {
+        val sb = StringBuilder()
+        repeat(grid.size) { y ->
+            repeat(grid[y].size) { x ->
+                sb.append(drawTile(grid[y][x]))
+            }
+            sb.append("\n")
+        }
+        println(sb)
+
+    }
+
+
+    private fun drawTile(tile: Tile) =
+        when (tile.type) {
+            WALL -> "#"
+            PADDLE -> "="
+            BLOCK -> "X"
+            BALL -> "O"
+            else -> " "
+
+        }
+
+    private fun movePaddle (target: Int) =
+        when {
+            paddle.x < target -> 1
+            paddle.x > target -> -1
+            else -> 0
+        }
+
 }
+
+
 

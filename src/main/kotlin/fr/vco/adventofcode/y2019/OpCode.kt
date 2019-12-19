@@ -53,7 +53,6 @@ class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
                     val (param) = getParamIndexes(1, ins.modes)
                     opCode[param] = stream.read()
                 } else {
-                    println("Input required")
                     cursor--
                     paused = true
                 }
