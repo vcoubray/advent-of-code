@@ -39,7 +39,7 @@ fun getMaxSignal(intCode: List<Long>, availableSettings: List<Int>, loop: Boolea
 
 fun execAmplifiers(amplifiers: List<OpCode>, input: Long): Long {
     var signal = input
-    amplifiers.forEachIndexed { i, amp ->
+    amplifiers.forEachIndexed { _, amp ->
         signal = execAmplifier(amp, signal) ?: signal
     }
     return signal
