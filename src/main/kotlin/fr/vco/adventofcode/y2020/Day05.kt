@@ -9,8 +9,12 @@ fun main() {
     val input = getInputReader("/2020/inputDay05.txt")
     val lines = input.readLines()
 
-    println("Part 1 : ${lines.map(::BoardingPass).maxBy { it.id }!!.id}")
+    val boardingPassIds = lines.map(::BoardingPass).map{it.id}.sorted()
+    val minId = boardingPassIds.first()
+    val maxId = boardingPassIds.last()
 
+    println("Part 1 : $maxId")
+    println("Part 2 : ${((minId..maxId)-boardingPassIds).first()}")
 
 }
 
@@ -30,5 +34,4 @@ class BoardingPass(passCode: String) {
         }
         return min
     }
-
 }
