@@ -30,7 +30,7 @@ class Passport {
     val fields = mutableMapOf<String, String>()
 
     fun isValid() = fields.keys.containsAll(RULES.keys)
-    fun isValidPart2() = isValid() && fields.all { (RULES[it.key] ?: (::ignored))(it.value) }
+    fun isValidPart2() = isValid() && fields.all { RULES.getOrDefault(it.key,::ignored)(it.value) }
 }
 
 fun byrIsValid(byr: String) = byr.toInt() in 1920..2002
