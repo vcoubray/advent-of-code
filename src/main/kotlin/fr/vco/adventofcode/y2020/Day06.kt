@@ -1,4 +1,4 @@
-package `2020`
+package fr.vco.adventofcode.y2020
 
 import fr.vco.adventofcode.getInputReader
 
