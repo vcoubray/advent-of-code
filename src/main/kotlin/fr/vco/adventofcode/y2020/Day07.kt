@@ -53,7 +53,7 @@ fun MutableMap<String, Bag>.getParentCount(color: String): Int {
     return visited.size - 1
 }
 
-fun extractColor(s: String) = "(\\d)+ (.*) bags?".toRegex().find(s)?.groupValues?.let { (_, n, s) -> n.toInt() to s }
+fun extractColor(s: String) = "(\\d+) (.*) bags?".toRegex().find(s)?.groupValues?.let { (_, n, s) -> n.toInt() to s }
 
 class Bag(
     val color: String,
