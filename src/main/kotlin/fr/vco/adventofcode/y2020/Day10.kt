@@ -1,18 +1,38 @@
 package fr.vco.adventofcode.y2020
 
 import fr.vco.adventofcode.getInputReader
+import kotlin.math.pow
 
 
 fun main() {
     val input = getInputReader("/2020/inputDay10.txt")
     val adapters = input.readLines().map { it.toInt() }.sorted()
 
-    val diffs = mutableListOf(0, 0, 1)
     var last = 0
+    val diffs = mutableListOf<Int>()
     adapters.forEach {
-        diffs[it - last - 1]++
+        diffs.add(it - last)
         last = it
     }
-    println("Part 1 : ${diffs.first() * diffs.last()}")
+    diffs.add(3)
 
+//    println("0 ${adapters.joinToString(" ")} 141")
+//    println(diffs.joinToString(" "))
+    println("Part 1 : ${diffs.filter { it == 1 }.size * diffs.filter { it == 3 }.size}")
+
+    var chain = 0
+    var combinaisons = 1L
+    diffs.forEach {
+        if (it == 1) chain++
+        else {
+            combinaisons *= when (chain) {
+                2 -> 2
+                3 -> 4
+                4 -> 7
+                else -> 1
+            }
+            chain = 0
+        }
+    }
+    println("Part 2 : $combinaisons")
 }
