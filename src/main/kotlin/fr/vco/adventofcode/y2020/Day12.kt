@@ -8,10 +8,13 @@ fun main() {
     val lines = input.readLines()
 
     val boat = Boat()
-
     lines.forEach(boat::move)
     println("Part 1 : ${ORIGIN.dist(boat.position)}")
 
+
+    val boatPart2 = Boat(waypoint = Position(10,1))
+    lines.forEach(boatPart2::moveWaypoint)
+    println("Part 2 : ${ORIGIN.dist(boatPart2.position)}")
 }
 
 
@@ -21,8 +24,8 @@ data class Position(val x: Int, val y: Int) {
     operator fun times(factor: Int) = Position(x * factor, y * factor)
     fun dist(pos: Position) = abs(x - pos.x) + abs(y - pos.y)
     fun turn(radian: Double) = Position(
-        (x * cos(radian) - y * sin(radian)).toInt(),
-        (x * sin(radian) + y * cos(radian)).toInt()
+        (x * cos(radian) - y * sin(radian)).roundToInt(),
+        (x * sin(radian) + y * cos(radian)).roundToInt()
     )
 }
 
@@ -34,7 +37,7 @@ val SOUTH = Position(0, -1)
 
 class Boat(
     var position: Position = ORIGIN,
-    var direction: Position = EAST
+    var waypoint: Position = EAST,
 ) {
 
     fun move(instruction: String) {
@@ -45,9 +48,24 @@ class Boat(
             'S' -> position = SOUTH * number + position
             'E' -> position = EAST * number + position
             'W' -> position = WEST * number + position
-            'F' -> position = direction * number + position
-            'L' -> direction = direction.turn(number.toRadian())
-            'R' -> direction = direction.turn(-number.toRadian())
+            'F' -> position = waypoint * number + position
+            'L' -> waypoint = waypoint.turn(number.toRadian())
+            'R' -> waypoint = waypoint.turn(-number.toRadian())
+            else -> error("Should not append")
+        }
+    }
+
+    fun moveWaypoint(instruction: String) {
+        val ins = instruction.first()
+        val number = instruction.drop(1).toInt()
+        when (ins) {
+            'N' -> waypoint = NORTH * number + waypoint
+            'S' -> waypoint = SOUTH * number + waypoint
+            'E' -> waypoint = EAST * number + waypoint
+            'W' -> waypoint = WEST * number + waypoint
+            'F' -> position = waypoint * number + position
+            'L' -> waypoint = waypoint.turn(number.toRadian())
+            'R' -> waypoint = waypoint.turn(-number.toRadian())
             else -> error("Should not append")
         }
     }
