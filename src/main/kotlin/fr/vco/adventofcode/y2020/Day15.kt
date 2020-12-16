@@ -1,10 +1,13 @@
 package fr.vco.adventofcode.y2020
 
+import fr.vco.adventofcode.getInputReader
 import kotlin.system.measureTimeMillis
 
 
 fun main() {
-    val firstNumbers = listOf(0, 20, 7, 16, 1, 18, 15)
+    val input = getInputReader("/2020/inputDay15.txt")
+    val lines = input.readLines()
+    val firstNumbers = lines.first().split(",").map{it.toInt()}
 
     measureTimeMillis {
         println("Part 1 : ${firstNumbers.getSpokenNumber(2020)}")
