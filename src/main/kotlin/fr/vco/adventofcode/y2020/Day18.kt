@@ -8,62 +8,47 @@ fun main() {
     val input = getInputReader("/2020/inputDay18.txt")
     val lines = input.readLines()
 
+    println("Part 1 : ${lines.map { transformPostfix(it) { 0 } }.map(::evalPostfix).sum()}")
+    println("Part 2 : ${lines.map { transformPostfix(it, ::precedence) }.map(::evalPostfix).sum()}")
 
-    println(eval("1 + 2 * 3 + 4 * 5 + 6"))
-    println(eval("1 + (2 * 3) + (4 * (5 + 6))"))
-    // println(eval("2 + (3 + 7 + 7) * 5 + 9 + (5 + (4 + 5 + 3 + 6) + 8 * 5 + (7 + 4 + 7 + 6 + 9) + 9)"))
-    //println("Part 1 : ${lines.map { eval(it) }.sum()}")
-
-//    "6 5 4 3 2 1 + * + * +"
-//    "1 2 + 3 4 + 5 6 + * *"
 }
 
+fun precedence(op: Char) = if (op == '+') 1 else 0
+fun Char.isOperator() = this == '+' || this == '*'
 
-fun eval(exp: String): Long {
-    val prefix = transformPrefix(exp)
-    println(prefix)
-    val numberStack = LinkedList<Long>()
+fun transformPostfix(exp: String, precedence: (Char) -> Int): String {
+    val postfixExp = mutableListOf<Char>()
     val operatorStack = LinkedList<Char>()
-    prefix.forEach {
+    exp.replace(" ", "").reversed().forEach {
+        when {
+            it.isDigit() -> postfixExp.add(it)
+            it == '(' -> {
+                while(operatorStack.first != ')')
+                    postfixExp.add(operatorStack.pop())
+                operatorStack.pop()
+            }
+            it.isOperator() -> {
+                while (operatorStack.isNotEmpty() && precedence(operatorStack.first) > precedence(it))
+                    postfixExp.add(operatorStack.pop())
+                operatorStack.addFirst(it)
+            }
+            else -> operatorStack.addFirst(it)
+        }
+    }
+    while (operatorStack.isNotEmpty())
+        postfixExp.add(operatorStack.pop())
+
+    return postfixExp.joinToString(" ")
+}
+
+fun evalPostfix(postfix: String): Long {
+    val numberStack = LinkedList<Long>()
+    postfix.forEach {
         when {
             it.isDigit() -> numberStack.addFirst("$it".toLong())
-            //else -> operatorStack.addFirst(it)
             it == '+' -> (numberStack.pop() + numberStack.pop()).let(numberStack::addFirst)
             it == '*' -> (numberStack.pop() * numberStack.pop()).let(numberStack::addFirst)
         }
     }
     return numberStack.pop()
 }
-
-fun transformPrefix(exp: String): String {
-    val outputQueue = LinkedList<Char>()
-    val operatorStack = LinkedList<Char>()
-    exp.replace(" ", "").reversed().forEach {
-        when {
-            it.isDigit() -> outputQueue.add(it)
-            it == ')' -> {
-                do {
-                    val op = operatorStack.pop()
-                    if (op != '(') outputQueue.add(op)
-                } while (op != '(')
-
-            }
-//            it == '*' -> {
-//                if (operatorStack.isNotEmpty() && operatorStack.first == '+') {
-//                    outputQueue.add(operatorStack.pop())
-//                }
-//                operatorStack.add (it)
-//            }
-            else -> operatorStack.addFirst(it)
-        }
-    }
-    while (operatorStack.isNotEmpty())
-        outputQueue.add(operatorStack.pop())
-
-    return outputQueue.joinToString(" ")
-}
-
-
-
-
-
