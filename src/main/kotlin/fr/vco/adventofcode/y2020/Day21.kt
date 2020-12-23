@@ -28,8 +28,6 @@ fun main() {
         .let{println("Part 1 : $it")}
 
     val dangerousIngredients = mutableMapOf<String,String>()
-    allergens.forEach(::println)
-
     while (allergens.any{(key,_)-> !dangerousIngredients.containsKey(key) }) {
         allergens.map{(key,value)-> key to value.minus(dangerousIngredients.values)}
             .filter{(_, value)-> value.size == 1}
