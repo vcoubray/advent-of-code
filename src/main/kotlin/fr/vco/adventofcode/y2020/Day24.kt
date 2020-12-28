@@ -13,10 +13,38 @@ fun main() {
 
     println("Part 1 : ${tiles.count { !it.value }}")
 
+    var hexagons = tiles.toMap()
+    repeat(100){
+        hexagons = hexagons.addNeighbors().switch()
+    }
+    println("Part 2 : ${hexagons.count { !it.value }}")
 }
 
-data class Hexagon(val x: Int, val y: Int) {
-    operator fun plus(dir: Hexagon) = Hexagon(this.x + dir.x, this.y + dir.y)
+const val WHITE = true
+const val BLACK = false
+
+fun Map<Hexagon, Boolean>.switch(): Map<Hexagon, Boolean> {
+    val hexagons = mutableMapOf<Hexagon, Boolean>()
+    this.forEach { (hexagon, isWhite) ->
+        val countBlack = hexagon. neighbors().map { this[it] ?: WHITE }.count { it == BLACK }
+        val color = when {
+            !isWhite && countBlack !in 1..2 -> WHITE
+            isWhite && countBlack == 2 -> BLACK
+            else -> isWhite
+        }
+        hexagons[hexagon] = color
+    }
+    return hexagons
+}
+
+fun Map<Hexagon, Boolean>.addNeighbors(): Map<Hexagon, Boolean> {
+    val hexagons = this.toMutableMap()
+    this.forEach { (hexagon, _) ->
+        hexagon.neighbors().forEach { neighbor ->
+            hexagons.computeIfAbsent(neighbor) { WHITE }
+        }
+    }
+    return hexagons
 }
 
 val CENTER = Hexagon(0, 0)
@@ -36,3 +64,7 @@ val direction = mapOf(
     "w" to W
 )
 
+data class Hexagon(val x: Int, val y: Int) {
+    fun neighbors() = direction.values.map { this + it }
+    operator fun plus(dir: Hexagon) = Hexagon(this.x + dir.x, this.y + dir.y)
+}
