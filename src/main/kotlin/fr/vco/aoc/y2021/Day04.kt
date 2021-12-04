@@ -10,7 +10,7 @@ fun main() {
     val grids = input.asSequence()
         .drop(1)
         .filterNot { it == "" }
-        .chunked(5)
+        .chunked(HEIGHT)
         .map(::Grid)
         .map { it.apply { playUntilWin(numbers) } }
         .toList()
