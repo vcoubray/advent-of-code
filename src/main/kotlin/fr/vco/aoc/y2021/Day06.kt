@@ -7,8 +7,8 @@ fun main() {
     val input = readLines("Day06")
     val fishes = input.first().split(",")
         .map { it.toInt() }
-        .groupingBy { it }.eachCount()
-        .toMutableMap()
+        .groupingBy { it }
+        .eachCount()
 
     val fishesByTimer = List(MAX_AGE) { fishes.getOrDefault(it, 0).toLong() }
 
