@@ -2,5 +2,6 @@ package fr.vco.aoc.y2021
 
 import java.io.File
 
-fun readLines(fileName : String) = File ("src/main/resources","$fileName.txt").readLines()
-
+private fun String.getInputFile() = File("src/main/resources", "$this.txt")
+fun readLines(fileName: String) = fileName.getInputFile().readLines()
+fun readFirstLine(fileName: String) = fileName.getInputFile().readLines().first()

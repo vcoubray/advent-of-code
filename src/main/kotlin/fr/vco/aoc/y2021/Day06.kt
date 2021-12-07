@@ -4,8 +4,8 @@ const val MAX_AGE = 9
 
 fun main() {
 
-    val input = readLines("Day06")
-    val fishes = input.first().split(",")
+    val input = readFirstLine("Day06")
+    val fishes = input.split(",")
         .map { it.toInt() }
         .groupingBy { it }
         .eachCount()
