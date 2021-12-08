@@ -8,11 +8,11 @@ fun main() {
     val input = readLines("Day08")
 
     val displays = input.map { line ->
-        val (inputNumbers, outputNumbers) = line.split(" | ").map { it.toSegmentDigitList() }
-        DigitDisplay(inputNumbers, outputNumbers)
+        val (inputDigits, outputDigits) = line.split(" | ").map { it.toSegmentDigitList() }
+        DigitDisplay(inputDigits, outputDigits)
     }
 
-    println("Part 1 : ${displays.sumOf { it.countNumbersWithUniqueSize() }}")
+    println("Part 1 : ${displays.sumOf { it.countDigitsWithUniqueSize() }}")
     println("Part 2 : ${displays.sumOf { it.outputToInt() }}")
 }
 
@@ -57,6 +57,6 @@ private class DigitDisplay(
         reverseMap = digitsMap.mapIndexed { i, it -> it to i.toString() }.toMap()
     }
 
-    fun countNumbersWithUniqueSize() = output.count { it.size in UNIQUE_SIZES }
+    fun countDigitsWithUniqueSize() = output.count { it.size in UNIQUE_SIZES }
     fun outputToInt() = output.joinToString("") { reverseMap[it]!! }.toInt()
 }
