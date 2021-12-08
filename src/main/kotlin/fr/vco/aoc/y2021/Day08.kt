@@ -48,9 +48,9 @@ private class DigitDisplay(
         digitsMap[5] = n5.first()
 
         // Digit with Size 6 (0, 6 and 9)
-        val (n0Andn9, n6) = digitsBySize[6]!!.partition { digitsMap[1] in it }
+        val (n0And9, n6) = digitsBySize[6]!!.partition { digitsMap[1] in it }
         digitsMap[6] = n6.first()
-        val (n9, n0) = n0Andn9.partition { digitsMap[4] in it }
+        val (n9, n0) = n0And9.partition { digitsMap[4] in it }
         digitsMap[0] = n0.first()
         digitsMap[9] = n9.first()
 
