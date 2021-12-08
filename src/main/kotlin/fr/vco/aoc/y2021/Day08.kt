@@ -45,19 +45,19 @@ private class DigitDisplay(
 
     fun findNumbersWith6Segments() {
         val (n0Andn9, n6) = input.filter { it.length == 6 }.partition { numbersMap[1].all { segment -> segment in it } }
-        numbersMap[6] = n6.first ()
+        numbersMap[6] = n6.first()
 
-        val (n9, n0) = n0Andn9.partition {  numbersMap[4].all { segment -> segment in it }}
+        val (n9, n0) = n0Andn9.partition { numbersMap[4].all { segment -> segment in it } }
         numbersMap[0] = n0.first()
         numbersMap[9] = n9.first()
     }
 
     fun findNumbersWith5Segments() {
         val (n3, n2and5) = input.filter { it.length == 5 }.partition { numbersMap[1].all { segment -> segment in it } }
-        numbersMap[3] = n3.first ()
+        numbersMap[3] = n3.first()
 
         val topLeftSegment = numbersMap[4] - numbersMap[3]
-        val (n5, n2) = n2and5.partition {  topLeftSegment in it }
+        val (n5, n2) = n2and5.partition { topLeftSegment in it }
         numbersMap[2] = n2.first()
         numbersMap[5] = n5.first()
     }
