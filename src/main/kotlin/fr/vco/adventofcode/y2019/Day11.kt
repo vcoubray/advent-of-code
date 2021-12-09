@@ -1,5 +1,6 @@
 package fr.vco.adventofcode.y2019
 
+import fr.vco.adventofcode.Position
 import fr.vco.adventofcode.getInputReader
 import java.lang.StringBuilder
 
@@ -7,10 +8,10 @@ import java.lang.StringBuilder
 const val BLACK = 0
 const val WHITE = 1
 
-const val UP = 0
-const val RIGHT = 1
-const val DOWN = 2
-const val LEFT = 3
+private const val UP = 0
+private const val RIGHT = 1
+private const val DOWN = 2
+private const val LEFT = 3
 
 fun main() {
 
@@ -41,7 +42,7 @@ fun paint(intCode: List<Long>,panels:Panels) {
 }
 
 
-class Robot(
+private class Robot(
     val opCode: OpCode,
     val panels : Panels,
     var direction: Int = LEFT
@@ -89,18 +90,13 @@ data class Panel(
     var color: Int = BLACK
 )
 
-data class Position (
-    val x : Int,
-    val y: Int
-)
-
 class Panels(firstPanelColor:Int ) {
 
     private val panels = mutableMapOf(Position(0,0) to Panel(0, 0,firstPanelColor))
 
     fun get(x : Int, y : Int) = get(Position(x,y))
 
-    fun get(pos : Position) :Panel{
+    fun get(pos : Position ) :Panel{
         if(!panels.containsKey(pos))
             panels[pos] = Panel(pos.x,pos.y)
         return panels[pos]!!

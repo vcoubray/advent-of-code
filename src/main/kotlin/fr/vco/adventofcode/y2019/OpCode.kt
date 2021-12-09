@@ -4,6 +4,9 @@ import java.lang.IllegalArgumentException
 import java.util.*
 
 
+fun String.toOpCode(opCodeStream: OpCodeStream = OpCodeStream()) =
+    OpCode(this.split(",").map { it.toLong() }, opCodeStream)
+
 class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
     private var cursor = 0L
     private var opCode = initOpCode()
@@ -12,10 +15,10 @@ class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
     private var isEnded = false
 
     private fun initOpCode() =
-        opCodeOrigin.mapIndexed{index, it -> index.toLong() to it}.toMap().toMutableMap()
+        opCodeOrigin.mapIndexed { index, it -> index.toLong() to it }.toMap().toMutableMap()
 
-    private fun get(index :Long) : Long {
-        if(!opCode.containsKey(index)) opCode[index] = 0
+    private fun get(index: Long): Long {
+        if (!opCode.containsKey(index)) opCode[index] = 0
         return opCode[index]!!
     }
 
@@ -114,7 +117,7 @@ class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
 
 data class Instruction(
     val ins: Int,
-    val modes: List<Int>
+    val modes: List<Int>,
 )
 
 
