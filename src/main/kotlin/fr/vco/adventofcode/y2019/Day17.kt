@@ -12,118 +12,19 @@ fun main() {
     }
 
     val maze = opCode.stream.output.map { it.toChar() }.joinToString("").lines()
-//    maze.forEach { println(it) }
-
+    opCode.stream.clear()
     println("Part 1 : ${maze.getIntersectionSum()}")
 
-    val robot = maze.getVacuumRobot()
-    maze.moveVacuumRobot(robot)
-    val path = robot.path.joinToString(",") { "${it.dir}${it.distance}" }
+    val routine = RoutineBuilder(maze.getVacuumRobotPath()).build()
 
-    println(path)
-    println(path.replace("L10,R8,R8", "A"))
-    println(path.replace("L10,R8,R8", "A").replace("L10,L12,R8,R10", "B"))
-    println(path.replace("L10,R8,R8", "A").replace("L10,L12,R8,R10", "B").replace("R10,L12,R10", "C"))
-    println(path.length)
+    opCode.restart()
+    opCode.editOpCode(0, 2)
+    opCode.stream.readln(routine.mainRoutine)
+    routine.subRoutines.forEach { opCode.stream.readln(it.toString()) }
+    opCode.stream.readln("n")
+    opCode.exec()
+    println("Part 2 : ${opCode.stream.output.last}")
 
-//    Routine.createRoutine(robot.path)
-
-    val subRoutines = Routine.findSubRoutines(robot.path, emptyList())
-    println(subRoutines?.map { r -> r.path.joinToString("") { "${it.dir}${it.distance}" } }?:"ho no")
-
-//    val routine = Routine(robot.path)
-//    routine.subRoutines = listOf(
-//        listOf(Move("L", 10), Move("R", 8), Move("R", 8)),
-//        listOf(Move("L", 10), Move("L", 12), Move("R", 8), Move("R", 10)),
-//        listOf(Move("R", 10), Move("L", 12), Move("R", 10))
-//    )
-//    println(routine.isValidRoutine())
-}
-
-private class SubRoutine(val name: String, val path: List<Move>)
-
-private class Routine(val initialPath: List<Move>) {
-    lateinit var subRoutines: MutableList<SubRoutine>
-
-    companion object {
-//        fun createRoutine(path: List<Move>): Routine {
-//            var routine = Routine(path)
-//            var newPath = path
-//            for (i in 1..4) {
-//                val routineA = newPath.take(i)
-//                for (j in 1..4) {
-//                    while (newPath.take(routineA.size) == routineA) {
-//                        newPath = newPath.drop(routineA.size)
-//                    }
-//                    val routineB = newPath.take(j)
-//                    for (k in 1..4) {
-//                        while (newPath.take(routineA.size) == routineA) {
-//                            newPath = newPath.drop(routineA.size)
-//                        }
-//                        val routineC = path.drop(i + j).take(k)
-//                        routine.subRoutines = mutableListOf(routineA, routineB, routineC)
-//                        println(routine.subRoutines.map { r -> r.path.joinToString("") { "${it.dir}${it.distance}" } })
-//                    }
-//                }
-//            }
-//            return routine
-//        }
-
-        fun findSubRoutines(path: List<Move>, subRoutines: List<SubRoutine>): List<SubRoutine>? {
-            if (subRoutines.size == 3) {
-//                println(subRoutines.map { r -> r.path.joinToString("") { "${it.dir}${it.distance}" } })
-                return if (isValid(subRoutines,path)) subRoutines
-                else null
-            }
-            var newPath = path
-            do {
-                val r = subRoutines.firstOrNull { newPath.take(it.path.size) == it.path }
-                r?.let { newPath = newPath.drop(it.path.size) }
-            } while (r != null)
-
-            if (path.isEmpty()) return null
-
-            for (i in 1..4) {
-                val subRoutine = SubRoutine(subRoutines.size.toString(), newPath.take(i))
-                val result = findSubRoutines(path, subRoutines + subRoutine)
-                if (result != null) return result
-            }
-            return null
-        }
-
-        fun isValid(subRoutines: List<SubRoutine>, path: List<Move>): Boolean {
-            if (subRoutines.isEmpty() || subRoutines.any { it.path.isEmpty() }) return false
-
-            var newPath = path
-            do {
-                val r = subRoutines.firstOrNull { newPath.take(it.path.size) == it.path }
-                r?.let { newPath = newPath.drop(it.path.size) }
-            } while (r != null)
-            return newPath.isEmpty()
-        }
-
-//        fun validRoutine(subRoutines: List<SubRoutine>, path: List<Move>): Boolean {
-//            if (path.isEmpty()) return true
-//            subRoutines.forEach {
-//                if (path.take(it.path.size) == it.path) return validRoutine(subRoutines,path.drop(it.path.size))
-//            }
-//            return false
-//        }
-    }
-
-
-    fun isValidRoutine(): Boolean {
-        return if (subRoutines.isEmpty() || subRoutines.any { it.path.isEmpty() }) false
-        else validRoutine(initialPath)
-    }
-
-    fun validRoutine(path: List<Move>): Boolean {
-        if (path.isEmpty()) return true
-        subRoutines.forEach {
-            if (path.take(it.path.size) == it.path) return validRoutine(path.drop(it.path.size))
-        }
-        return false
-    }
 }
 
 private fun List<String>.get(x: Int, y: Int) = this.getOrNull(y)?.getOrNull(x)
@@ -161,7 +62,8 @@ private fun List<String>.getVacuumRobot(): VacuumRobot {
     throw IllegalStateException("No vacuum Robot found")
 }
 
-private fun List<String>.moveVacuumRobot(robot: VacuumRobot) {
+private fun List<String>.getVacuumRobotPath() : List<Move>{
+    val robot = this.getVacuumRobot()
     while (!robot.hasFinish) {
         when {
             get(robot.nextPosition()) == '#' -> robot.moveForward()
@@ -170,6 +72,7 @@ private fun List<String>.moveVacuumRobot(robot: VacuumRobot) {
             else -> robot.hasFinish = true
         }
     }
+    return robot.path
 }
 
 private const val TOP = 0
@@ -184,7 +87,10 @@ private var DIRECTION = listOf(
     Position(-1, 0)  // LEFT
 )
 
-private data class Move(val dir: String, var distance: Int)
+private data class Move(val dir: String, var distance: Int) {
+    override fun toString() = "$dir,$distance"
+}
+
 private data class VacuumRobot(var position: Position, var direction: Int) {
     var hasFinish = false
     val path = mutableListOf<Move>()
@@ -208,5 +114,60 @@ private data class VacuumRobot(var position: Position, var direction: Int) {
         position = leftPosition()
         direction = (direction + 3) % 4
         path.add(Move("L", 1))
+    }
+}
+
+
+private class SubRoutine(val name: String, val path: List<Move>) {
+    override fun toString() = path.joinToString(",")
+}
+
+private class Routine(val initialPath: List<Move>, val subRoutines: List<SubRoutine>) {
+    val mainRoutine = subRoutines.fold(initialPath.joinToString(",")) { acc, a -> acc.replace(a.toString(), a.name) }
+}
+
+private class RoutineBuilder(
+    val initialPath: List<Move>,
+    val maxMoveBySubRoutine: Int = 4,
+    val subRoutinesName: List<String> = listOf("A", "B", "C"),
+) {
+    val maxSubRoutine: Int = subRoutinesName.size
+    fun build(): Routine {
+        findValidSubRoutines(initialPath, emptyList())?.let { subRoutines ->
+            return Routine(initialPath, subRoutines)
+        } ?: throw Exception("No valid subRoutines found")
+    }
+
+    private fun findValidSubRoutines(path: List<Move>, subRoutines: List<SubRoutine>): List<SubRoutine>? {
+        if (subRoutines.size == maxSubRoutine) {
+            return if (isValid(subRoutines)) subRoutines
+            else null
+        }
+
+        var newPath = path
+        do {
+            val r = subRoutines.firstOrNull { newPath.take(it.path.size) == it.path }
+            r?.let { newPath = newPath.drop(it.path.size) }
+        } while (r != null)
+
+        if (newPath.isEmpty()) return subRoutines
+
+        for (i in 1..maxMoveBySubRoutine) {
+            val subRoutine = SubRoutine(subRoutinesName[subRoutines.size], newPath.take(i))
+            val result = findValidSubRoutines(path, subRoutines + subRoutine)
+            if (result != null) return result
+        }
+        return null
+    }
+
+    private fun isValid(subRoutines: List<SubRoutine>): Boolean {
+        if (subRoutines.isEmpty() || subRoutines.any { it.path.isEmpty() }) return false
+
+        var path = initialPath
+        do {
+            val r = subRoutines.firstOrNull { path.take(it.path.size) == it.path }
+            r?.let { path = path.drop(it.path.size) }
+        } while (r != null)
+        return path.isEmpty()
     }
 }

@@ -14,6 +14,10 @@ class OpCode(private val opCodeOrigin: List<Long>, val stream: OpCodeStream) {
     private var relativeBase = 0L
     private var isEnded = false
 
+    fun editOpCode(index: Long, value :Long) {
+        opCode[index] = value
+    }
+
     private fun initOpCode() =
         opCodeOrigin.mapIndexed { index, it -> index.toLong() to it }.toMap().toMutableMap()
 
@@ -126,7 +130,6 @@ class OpCodeStream {
     val output = LinkedList<Long>()
 
     fun hasInput() = input.isNotEmpty()
-
     fun read() = input.poll()!!
 
     fun write(value: Long) {
@@ -136,6 +139,10 @@ class OpCodeStream {
     fun clear() {
         input.removeIf { true }
         output.removeIf { true }
+    }
+
+    fun readln(value : String ) {
+        input.addAll("$value\n".map{it.toLong()})
     }
 
 }
