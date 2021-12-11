@@ -10,7 +10,6 @@ fun main() {
     println("Part 2: ${octopuses.findFirstSynchronizedFlash()}")
 }
 
-
 private fun List<String>.get(x: Int, y: Int) = this.getOrNull(y)?.getOrNull(x)
 private fun List<String>.convertCoord(x: Int, y: Int) = this.get(x, y)?.let { this.first().length * y + x }
 private fun List<String>.getNeighbors(x: Int, y: Int) = buildList<Int> {
@@ -24,7 +23,7 @@ private fun List<String>.getNeighbors(x: Int, y: Int) = buildList<Int> {
 private data class Octopus(var energy: Int, val neighbors: List<Int>)
 
 private fun List<Octopus>.simulate(step: Int): Int {
-    val octopus = this.map {it.copy(energy = it.energy)}
+    val octopus = this.map {it.copy()}
     return (0 until step).fold(0) { acc, _ -> acc + octopus.simulate().count { it.energy == 0 } }
 }
 
