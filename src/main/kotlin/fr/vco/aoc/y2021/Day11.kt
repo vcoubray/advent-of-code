@@ -6,7 +6,8 @@ fun main() {
         line.mapIndexed { x, it -> Octopus(it.digitToInt(), input.getNeighbors(x, y)) }
     }
 
-    println(octopuses.simulate(100))
+    println("Part 1: ${octopuses.simulate(100)}")
+    println("Part 2: ${octopuses.findFirstSynchronizedFlash()+100}")
 }
 
 
@@ -22,25 +23,30 @@ private fun List<String>.getNeighbors(x: Int, y: Int) = buildList<Int> {
 
 private data class Octopus(var energy: Int, val neighbors: List<Int>)
 
-private fun List<Octopus>.simulate(step: Int) :Int{
-    var flash = 0
-    repeat(step) { i ->
-        // Increase energy
-        this.forEach { it.energy++ }
-        // Flash
-        while (this.any { it.energy > 9 }) {
-            this.forEach { octopus ->
-                if (octopus.energy > 9) {
-                    octopus.energy = -1
-                    flash++
-                    octopus.neighbors.forEach { n ->
-                        if (this[n].energy != -1) this[n].energy++
-                    }
+private fun List<Octopus>.simulate(step: Int): Int {
+    return (0 until step).fold(0) { acc, _ -> acc + this.simulate().count { it.energy == 0 } }
+}
+
+private fun List<Octopus>.simulate() = apply {
+    this.forEach { it.energy++ }
+    while (this.any { it.energy > 9 }) {
+        this.forEach { octopus ->
+            if (octopus.energy > 9) {
+                octopus.energy = -1
+                octopus.neighbors.forEach { n ->
+                    if (this[n].energy != -1) this[n].energy++
                 }
             }
         }
-        this.forEach{ if(it.energy == -1 ) it.energy = 0 }
     }
-    return flash
+    this.forEach { if (it.energy == -1) it.energy = 0 }
 }
-private fun List<Octopus>.print() = this.chunked(10).joinToString("\n"){it.joinToString(""){o-> "${o.energy}"} }
+
+private fun List<Octopus>.findFirstSynchronizedFlash(): Int {
+    var step = 0
+    while (!this.all { it.energy == 0 }) {
+        step++
+        this.simulate()
+    }
+    return step
+}
