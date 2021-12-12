@@ -23,8 +23,8 @@ private fun List<String>.getNeighbors(x: Int, y: Int) = buildList<Int> {
 private data class Octopus(var energy: Int, val neighbors: List<Int>)
 
 private fun List<Octopus>.simulate(step: Int): Int {
-    val octopus = this.map {it.copy()}
-    return (0 until step).fold(0) { acc, _ -> acc + octopus.simulate().count { it.energy == 0 } }
+    val octopuses = this.map {it.copy()}
+    return (0 until step).fold(0) { acc, _ -> acc + octopuses.simulate().count { it.energy == 0 } }
 }
 
 private fun List<Octopus>.simulate() = apply {
