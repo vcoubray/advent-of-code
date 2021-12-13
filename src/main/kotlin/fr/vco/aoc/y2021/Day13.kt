@@ -23,9 +23,8 @@ fun main() {
 
 private class Folder(val line: Int, axis: String) {
     val foldAxis = if (axis == "x") ::foldX else ::foldY
-    fun fold(dot: Pair<Int, Int>) = foldAxis(dot)
-    fun fold(dots: Set<Pair<Int, Int>>) = dots.map { fold(it) }.toSet()
-    private fun foldX(dot: Pair<Int, Int>) = Pair(foldValue(dot.first), dot.second)
-    private fun foldY(dot: Pair<Int, Int>) = Pair(dot.first, foldValue(dot.second))
+    fun fold(dots: Set<Pair<Int, Int>>) = dots.map(foldAxis).toSet()
+    private fun foldX(dot: Pair<Int, Int>) = dot.copy(first = foldValue(dot.first))
+    private fun foldY(dot: Pair<Int, Int>) = dot.copy(second = foldValue(dot.second))
     private fun foldValue(value: Int) = if (value < line) value else 2 * line - value
 }
