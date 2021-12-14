@@ -7,7 +7,7 @@ fun main() {
 
     val (corruptedScores, completionScores) = input.map { it.errorScore() }.partition { it.corruptionScore != 0L }
     println("Part 1 : ${corruptedScores.sumOf { it.corruptionScore }}")
-    println("Part 2 : ${completionScores.medianOf { it.completionScore }}")
+    println("Part 2 : ${completionScores.medianOf { it.completionScore }.completionScore}")
 }
 
 val expectedClosure = mapOf('(' to ')', '[' to ']', '{' to '}', '<' to '>')
