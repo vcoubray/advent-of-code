@@ -5,8 +5,11 @@ import java.util.*
 fun main() {
     val input = readLines("Day15")
 
-    val cavern = input.toCellList()
+    val cavern = input.toTileList()
     println("Part 1 : ${cavern.dijkstra()}")
+
+    val bigCavern = input.multiply(5).toTileList()
+    println("Part 2 : ${bigCavern.dijkstra()}")
 
 }
 
@@ -19,9 +22,13 @@ private fun List<String>.getNeighbors(x: Int, y: Int) = listOfNotNull(
     this.convertCoord(x, y + 1),
 )
 
+private fun List<String>.multiply(times: Int) = List(this.size * times) { this[it % this.size].increaseRisk(it / this.size).multiply(times) }
+private fun String.multiply(times: Int) = List(times) { this.increaseRisk(it) }.joinToString("")
+private fun String.increaseRisk(increase: Int) = this.map { it.digitToInt() }.map { ((it - 1 + increase) % 9) + 1 }.joinToString("")
+
 private data class Tile(val risk: Int, val neighborsId: List<Int>)
 
-private fun List<String>.toCellList() = this.flatMapIndexed { y, line ->
+private fun List<String>.toTileList() = this.flatMapIndexed { y, line ->
     line.mapIndexed { x, c ->
         Tile(c.digitToInt(), this.getNeighbors(x, y))
     }
