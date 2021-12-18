@@ -30,15 +30,15 @@ abstract class SnailFishNumber (val parent : SnailFishNumber? = null) {
 
     operator fun plus(number: SnailFishNumber) = Pair(this, number)
     operator fun plus(number: Int) = Pair(this, Number(number))
-    abstract fun magnetude() : Int
+    abstract fun magnitude() : Int
 
     class Number(val value: Int) : SnailFishNumber() {
-        override fun magnetude() = value
+        override fun magnitude() = value
         override fun toString() = "$value"
     }
 
     class Pair(val left: SnailFishNumber, val right: SnailFishNumber) : SnailFishNumber() {
-        override fun magnetude()= 3 * left.magnetude()+ 2 * right.magnetude()
+        override fun magnitude()= 3 * left.magnitude()+ 2 * right.magnitude()
         override fun toString() = "[$left,$right]"
     }
 }
