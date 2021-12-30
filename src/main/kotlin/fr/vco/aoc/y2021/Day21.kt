@@ -46,7 +46,7 @@ private fun List<Player>.playDeterministicGame(
 }
 
 private fun <T> List<T>.combination(list: List<T>, operation: (T, T) -> T) =
-    this.map { a -> list.map { b -> operation(a, b) } }.flatten()
+    this.flatMap { a -> list.map { b -> operation(a, b) } }
 
 private class QuantumDie(faces: Int = 3, rollsCount: Int = 3) {
     val rolls = List(rollsCount) { List(faces) { it + 1 } }
