@@ -4,7 +4,7 @@ import java.util.*
 
 fun main() {
     val input = readLines("Day23")
-    val state = State(input.map { it.toMutableList() })
+    val state = State(input.drop(1).dropLast(1).map { it.toMutableList() })
 
     state.board.forEach { println(it.joinToString("")) }
 
@@ -25,7 +25,7 @@ fun main() {
 //    val array2 = "abcdef".toCharArray()
 //    println(array.contentEquals(array2))
 
-     findValidState(state)?.board?.forEach { println(it.joinToString("")) }
+    findValidState(state)?.board?.forEach { println(it.joinToString("")) }
 
 
 }
@@ -34,10 +34,14 @@ fun main() {
 private fun findValidState(state: State): State? {
     val toVisit = LinkedList<State>().apply { add(state) }
     val visited = mutableSetOf<State>()
+    var count = 0
+    var start = System.currentTimeMillis()
     while (toVisit.isNotEmpty()) {
         val current = toVisit.poll()
+        count++
         visited.add(current)
-        current.board.forEach { println(it.joinToString("")) }
+//        current.board.forEach { println(it.joinToString("")) }
+        if (count % 1000 == 0) println("$count in ${System.currentTimeMillis() - start}ms")
         current.getActions().forEach { action ->
             val child = current.copy().apply { play(action) }
             if (child.isValid()) return child
@@ -63,22 +67,29 @@ private fun List<List<Char>>.getNeighbours(x: Int, y: Int): List<Pair<Int, Int>>
     )
 }
 
-private fun isValidTarget(amphipod: Char, x: Int, y: Int): Boolean {
-    return (y == 1 && x !in listOf(3, 5, 7, 9)) ||
-        (amphipod == 'A' && y != 1 && x == 3) ||
-        (amphipod == 'B' && y != 1 && x == 5) ||
-        (amphipod == 'C' && y != 1 && x == 7) ||
-        (amphipod == 'D' && y != 1 && x == 9)
+private fun List<List<Char>>.isValidTarget(amphipod: Char, x: Int, y: Int): Boolean {
+    return (y == 0 && x !in listOf(3, 5, 7, 9)) || this.isValidChamber(amphipod, x, y)
 }
 
+val chamber = mapOf('A' to 3, 'B' to 5, 'C' to 7, 'D' to 9)
+
+private fun List<List<Char>>.isValidChamber(amphipod: Char, x: Int, y: Int): Boolean {
+    return when {
+        (y == 0 || x != chamber[amphipod]) -> false
+        (y == 1 && this[2][chamber[amphipod]!!] == amphipod) -> true
+        (y == 2) -> true
+        else -> false
+    }
+}
 
 data class State(val board: List<MutableList<Char>>, var cost: Int = 0) {
 
     fun getActions(): List<Action> {
         return board.flatMapIndexed { y, line ->
             line.mapIndexed { x, _ -> x to y }.filter { (x, y) -> board[y][x] in "ABCD" }
+                .filterNot { (x, y) -> board.isValidChamber(board[y][x], x, y) }
         }
-            .filter{(x,_)-> x != 1}
+            .filter { (x, _) -> x != 1 }
             .flatMap { (x, y) -> getTargets(x, y) }
     }
 
@@ -98,8 +109,9 @@ data class State(val board: List<MutableList<Char>>, var cost: Int = 0) {
         }
 
         return visited
+            .filterNot{(x,_)-> x == 0 && xOrigin == 0 }
             .filterNot { (x, y) -> x == xOrigin && y == yOrigin }
-            .filter { (x, y) -> isValidTarget(amphipod, x, y) }
+            .filter { (x, y) -> board.isValidTarget(amphipod, x, y) }
             .map { (x, y) -> Action(xOrigin, yOrigin, x, y) }
     }
 
@@ -116,13 +128,13 @@ data class State(val board: List<MutableList<Char>>, var cost: Int = 0) {
     }
 
     fun isValid(): Boolean =
-        board[2][3] == 'A' &&
-            board[3][3] == 'A' &&
-            board[2][5] == 'B' &&
-            board[3][5] == 'B' &&
-            board[2][7] == 'C' &&
-            board[3][7] == 'C' &&
-            board[2][9] == 'D' &&
-            board[3][9] == 'D'
+        board[1][3] == 'A' &&
+                board[2][3] == 'A' &&
+                board[1][5] == 'B' &&
+                board[2][5] == 'B' &&
+                board[1][7] == 'C' &&
+                board[2][7] == 'C' &&
+                board[1][9] == 'D' &&
+                board[2][9] == 'D'
 
 }
