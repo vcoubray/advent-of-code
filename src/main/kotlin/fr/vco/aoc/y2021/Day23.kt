@@ -1,37 +1,22 @@
 package fr.vco.aoc.y2021
 
 import java.util.*
+import kotlin.math.absoluteValue
 
 fun main() {
     val input = readLines("Day23")
 
-    val state = State(input.transpose().drop(1).dropLast(1).map { LinkedList<Char>().apply{addAll(it)} })
-    state.board.forEach { println("->" + it.joinToString("")) }
+    val (statePart1, statePart2) = input.split { it == "" }.map {
+        val chamberSize = it.size - 3
+        val board = it.transpose()
+            .drop(1)
+            .dropLast(1)
+            .map { LinkedList<Char>().apply { addAll(it) } }
+        State(chamberSize, board)
+    }
 
-//    println(state.getActions())
-//    state.play(Action2(2,0))
-//    state.play(Action2(2,1))
-//    state.play(Action2(4,2))
-//    state.play(Action2(8,10))
-//    state.play(Action2(8,2))
-//    state.play(Action2(4,8))
-//    state.play(Action2(6,4))
-//    state.play(Action2(6,8))
-//    state.play(Action2(1,6))
-//    state.play(Action2(10,6))
-//    state.play(Action2(0,4))
-//    state.board.forEach { println("->" + it.joinToString("")) }
-//    println(state.isValid())
-//    println(state.getActions())
-
-
-//    Board.init(input)
-//    Board.board.forEach { println(it.joinToString("")) }
-//    val state = State(Board.startPositions)
-
-//    val state = StateOld(input.drop(1).dropLast(1).map { it.toMutableList() })
-    findValidState(state)?.board?.forEach { println(it.joinToString("")) }
-
+    println("Part 1 : ${findBestCost(statePart1)?.cost}")
+    println("Part 2 : ${findBestCost(statePart2)?.cost}")
 }
 
 fun List<String>.transpose(): List<List<Char>> {
@@ -43,86 +28,88 @@ fun List<String>.transpose(): List<List<Char>> {
     }
 }
 
-val chamber2 = mapOf('A' to 2, 'B' to 4, 'C' to 6, 'D' to 8)
-val revertChamber = chamber2.map{(k,v) -> v to k}.toMap()
+val chambers = mapOf(2 to 'A', 4 to 'B', 6 to 'C', 8 to 'D')
+val costs = mapOf('A' to 1, 'B' to 10, 'C' to 100, 'D' to 1000)
 
-data class Action(val origin: Int, val target: Int)
+data class Action(val origin: Int, val target: Int, val cost: Int)
 
 data class State(
+    val chamberSize: Int,
     val board: List<MutableList<Char>>,
-    val cost: Int = 0,
+    var cost: Int = 0
 ) {
 
-    fun getTargets(amphipod: Char, x: Int) : List<Action> {
-        val targets = mutableListOf<Action>()
+    private fun isValidChamber(x: Int) = board[x].all { chambers[x] == it }
 
-        var i = x - 1
-        while ( i >= 0 ) {
-            if(i in revertChamber.keys) {
-                if(revertChamber[i] == amphipod && board[i].all{it == amphipod})
-                    targets.add(Action(x,i))
+    private fun getTargets(progression: IntProgression, amphipod: Char, start: Int): List<Int> {
+        val targets = mutableListOf<Int>()
+        for (i in progression) {
+            when {
+                i in chambers.keys -> if (chambers[i] == amphipod && isValidChamber(i)) targets.add(i)
+                board[i].isNotEmpty() -> break
+                start in chambers.keys -> targets.add(i)
             }
-            else if (board[i].isNotEmpty()) break
-            else if (x in revertChamber.keys ) targets.add(Action(x,i))
-            i--
-        }
-
-        i = x + 1
-        while ( i < board.size ) {
-            if(i in revertChamber.keys) {
-                if(revertChamber[i] == amphipod && board[i].all{it == amphipod})
-                    targets.add(Action(x,i))
-            }
-            else if (board[i].isNotEmpty()) break
-            else if (x in revertChamber.keys ) targets.add(Action(x,i))
-            i++
         }
         return targets
     }
 
+    private fun getTargets(amphipod: Char, start: Int): List<Action> {
+        return buildList {
+            addAll(getTargets(start - 1 downTo 0, amphipod, start))
+            addAll(getTargets(start + 1 until board.size, amphipod, start))
+        }.map { target ->
+            var cost = (start - target).absoluteValue
+            if (start in chambers.keys) cost += chamberSize + 1 - board[start].size
+            if (target in chambers.keys) cost += chamberSize - board[target].size
+            Action(start, target, cost * costs[amphipod]!!)
+        }
+    }
+
     fun getActions(): List<Action> {
         val starts = board.mapIndexedNotNull { x, it ->
-            it.firstOrNull()?.let{ it to x }
-        }.filterNot{(it,x) -> x == chamber2[it]!!}
-        return starts.flatMap{(amphipod,x ) -> getTargets(amphipod,x)}
-
+            it.firstOrNull()?.let { it to x }
+        }.filterNot { (amphipod, x) -> chambers[x] == amphipod && isValidChamber(x) }
+        return starts.flatMap { (amphipod, x) -> getTargets(amphipod, x) }
     }
 
     fun copy(cost: Int = this.cost) = State(
+        chamberSize = chamberSize,
         board = board.map { it.toMutableList() },
         cost = cost
     )
 
     fun play(action: Action) {
+        cost += action.cost
         val amphipod = board[action.origin].removeFirst()
-        board[action.target].add(0,amphipod)
+        board[action.target].add(0, amphipod)
     }
 
-    fun isValid() = chamber2.all { (type, x) -> board[x].size == 2 && board[x].all { it == type } }
+    fun isValid() = chambers.keys.all { board[it].size == chamberSize && isValidChamber(it) }
 
+    override fun equals(other: Any?): Boolean {
+        return if (other is State) this.board == other.board
+        else false
+    }
+
+    override fun hashCode(): Int {
+        return board.hashCode()
+    }
 }
 
-
-private fun findValidState(state: State): State? {
-    val toVisit = LinkedList<State>().apply { add(state) }
-    val visited = mutableSetOf<State>()
-    var count = 0
-    var start = System.currentTimeMillis()
+private fun findBestCost(state: State): State? {
+    val costComparator = compareBy<State> { it.cost }
+    val toVisit = PriorityQueue(costComparator).apply { add(state) }
+    val visited = mutableMapOf<State, Int>()
     while (toVisit.isNotEmpty()) {
         val current = toVisit.poll()
-        count++
-        visited.add(current)
-//        current.board.forEach { println(it.joinToString("")) }
-        if (count % 1000 == 0) println("$count in ${System.currentTimeMillis() - start}ms")
-        current.getActions().forEach { action ->
-            val child = current.copy().apply { play(action) }
-            if (child.isValid()) return child
-            if (child !in visited && child !in toVisit) {
-                toVisit.addLast(child)
-            }
-        }
+        if (current.isValid()) return current
 
+        if ((visited[current] ?: Int.MAX_VALUE) > current.cost) {
+            current.getActions().forEach { action ->
+                toVisit.add(current.copy().apply { play(action) })
+            }
+            visited[current] = current.cost
+        }
     }
     return null
-
 }
