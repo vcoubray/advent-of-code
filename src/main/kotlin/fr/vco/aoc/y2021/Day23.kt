@@ -4,29 +4,101 @@ import java.util.*
 
 fun main() {
     val input = readLines("Day23")
-    val state = State(input.drop(1).dropLast(1).map { it.toMutableList() })
 
-    state.board.forEach { println(it.joinToString("")) }
+    val state = State(input.transpose().drop(1).dropLast(1).map { LinkedList<Char>().apply{addAll(it)} })
+    state.board.forEach { println("->" + it.joinToString("")) }
 
+//    println(state.getActions())
+//    state.play(Action2(2,0))
+//    state.play(Action2(2,1))
+//    state.play(Action2(4,2))
+//    state.play(Action2(8,10))
+//    state.play(Action2(8,2))
+//    state.play(Action2(4,8))
+//    state.play(Action2(6,4))
+//    state.play(Action2(6,8))
+//    state.play(Action2(1,6))
+//    state.play(Action2(10,6))
+//    state.play(Action2(0,4))
+//    state.board.forEach { println("->" + it.joinToString("")) }
 //    println(state.isValid())
-//    state.play(Action(3, 2, 5, 2))
-//    state.play(Action(3, 3, 9, 3))
-//    state.play(Action(7, 2, 5, 3))
-//    state.play(Action(7, 2, 9, 2))
-//    state.play(Action(7, 3, 9, 3))
-//
-//    state.board.forEach { println(it.joinToString("")) }
-//    println(state.isValid())
+//    println(state.getActions())
 
-//    state.getTargets(3, 2).forEach(::println)
-//    state.getActions().forEach(::println)
 
-//    val array = "abcdef".toCharArray()
-//    val array2 = "abcdef".toCharArray()
-//    println(array.contentEquals(array2))
+//    Board.init(input)
+//    Board.board.forEach { println(it.joinToString("")) }
+//    val state = State(Board.startPositions)
 
+//    val state = StateOld(input.drop(1).dropLast(1).map { it.toMutableList() })
     findValidState(state)?.board?.forEach { println(it.joinToString("")) }
 
+}
+
+fun List<String>.transpose(): List<List<Char>> {
+    return if (this.isEmpty()) emptyList()
+    else this.first().indices.map { y ->
+        this.indices.map { x ->
+            this.getOrNull(x)?.getOrNull(y) ?: ' '
+        }.filter { it in "ABCD" }
+    }
+}
+
+val chamber2 = mapOf('A' to 2, 'B' to 4, 'C' to 6, 'D' to 8)
+val revertChamber = chamber2.map{(k,v) -> v to k}.toMap()
+
+data class Action(val origin: Int, val target: Int)
+
+data class State(
+    val board: List<MutableList<Char>>,
+    val cost: Int = 0,
+) {
+
+    fun getTargets(amphipod: Char, x: Int) : List<Action> {
+        val targets = mutableListOf<Action>()
+
+        var i = x - 1
+        while ( i >= 0 ) {
+            if(i in revertChamber.keys) {
+                if(revertChamber[i] == amphipod && board[i].all{it == amphipod})
+                    targets.add(Action(x,i))
+            }
+            else if (board[i].isNotEmpty()) break
+            else if (x in revertChamber.keys ) targets.add(Action(x,i))
+            i--
+        }
+
+        i = x + 1
+        while ( i < board.size ) {
+            if(i in revertChamber.keys) {
+                if(revertChamber[i] == amphipod && board[i].all{it == amphipod})
+                    targets.add(Action(x,i))
+            }
+            else if (board[i].isNotEmpty()) break
+            else if (x in revertChamber.keys ) targets.add(Action(x,i))
+            i++
+        }
+        return targets
+    }
+
+    fun getActions(): List<Action> {
+        val starts = board.mapIndexedNotNull { x, it ->
+            it.firstOrNull()?.let{ it to x }
+        }.filterNot{(it,x) -> x == chamber2[it]!!}
+        return starts.flatMap{(amphipod,x ) -> getTargets(amphipod,x)}
+
+    }
+
+    fun copy(cost: Int = this.cost) = State(
+        board = board.map { it.toMutableList() },
+        cost = cost
+    )
+
+    fun play(action: Action) {
+        val amphipod = board[action.origin].removeFirst()
+        board[action.target].add(0,amphipod)
+    }
+
+    fun isValid() = chamber2.all { (type, x) -> board[x].size == 2 && board[x].all { it == type } }
 
 }
 
@@ -52,89 +124,5 @@ private fun findValidState(state: State): State? {
 
     }
     return null
-
-}
-
-
-data class Action(val xOrigin: Int, val yOrigin: Int, val xTarget: Int, val yTarget: Int)
-
-private fun List<List<Char>>.getNeighbours(x: Int, y: Int): List<Pair<Int, Int>> {
-    return listOfNotNull(
-        this.getOrNull(y + 1)?.getOrNull(x)?.let { x to y + 1 },
-        this.getOrNull(y - 1)?.getOrNull(x)?.let { x to y - 1 },
-        this.getOrNull(y)?.getOrNull(x + 1)?.let { x + 1 to y },
-        this.getOrNull(y)?.getOrNull(x - 1)?.let { x - 1 to y }
-    )
-}
-
-private fun List<List<Char>>.isValidTarget(amphipod: Char, x: Int, y: Int): Boolean {
-    return (y == 0 && x !in listOf(3, 5, 7, 9)) || this.isValidChamber(amphipod, x, y)
-}
-
-val chamber = mapOf('A' to 3, 'B' to 5, 'C' to 7, 'D' to 9)
-
-private fun List<List<Char>>.isValidChamber(amphipod: Char, x: Int, y: Int): Boolean {
-    return when {
-        (y == 0 || x != chamber[amphipod]) -> false
-        (y == 1 && this[2][chamber[amphipod]!!] == amphipod) -> true
-        (y == 2) -> true
-        else -> false
-    }
-}
-
-data class State(val board: List<MutableList<Char>>, var cost: Int = 0) {
-
-    fun getActions(): List<Action> {
-        return board.flatMapIndexed { y, line ->
-            line.mapIndexed { x, _ -> x to y }.filter { (x, y) -> board[y][x] in "ABCD" }
-                .filterNot { (x, y) -> board.isValidChamber(board[y][x], x, y) }
-        }
-            .filter { (x, _) -> x != 1 }
-            .flatMap { (x, y) -> getTargets(x, y) }
-    }
-
-    private fun getTargets(xOrigin: Int, yOrigin: Int): List<Action> {
-        val amphipod = board[yOrigin][xOrigin]
-        val toVisit = LinkedList<Pair<Int, Int>>().apply { add(xOrigin to yOrigin) }
-        val visited = mutableSetOf<Pair<Int, Int>>()
-
-        while (toVisit.isNotEmpty()) {
-            val (x, y) = toVisit.poll()
-            visited.add(x to y)
-            board.getNeighbours(x, y).forEach { neighbor ->
-                if (board[neighbor.second][neighbor.first] == '.' && neighbor !in visited) {
-                    toVisit.addLast(neighbor)
-                }
-            }
-        }
-
-        return visited
-            .filterNot{(x,_)-> x == 0 && xOrigin == 0 }
-            .filterNot { (x, y) -> x == xOrigin && y == yOrigin }
-            .filter { (x, y) -> board.isValidTarget(amphipod, x, y) }
-            .map { (x, y) -> Action(xOrigin, yOrigin, x, y) }
-    }
-
-    fun copy(cost: Int = this.cost) = State(
-        board = board.map { it.toMutableList() },
-        cost = cost
-    )
-
-
-    fun play(action: Action) {
-        val origin = board[action.yOrigin][action.xOrigin]
-        board[action.yOrigin][action.xOrigin] = board[action.yTarget][action.xTarget]
-        board[action.yTarget][action.xTarget] = origin
-    }
-
-    fun isValid(): Boolean =
-        board[1][3] == 'A' &&
-                board[2][3] == 'A' &&
-                board[1][5] == 'B' &&
-                board[2][5] == 'B' &&
-                board[1][7] == 'C' &&
-                board[2][7] == 'C' &&
-                board[1][9] == 'D' &&
-                board[2][9] == 'D'
 
 }
