@@ -14,3 +14,12 @@ fun List<String>.split(predicate: (String) -> Boolean): List<List<String>> {
     }
     return list
 }
+
+fun List<String>.chunked(predicate: (String) -> Boolean): List<List<String>> {
+    val list = mutableListOf(mutableListOf<String>())
+    this.forEach {
+        if (predicate(it)) list.add(mutableListOf(it))
+        else list.last().add(it)
+    }
+    return list
+}
