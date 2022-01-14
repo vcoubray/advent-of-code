@@ -4,68 +4,43 @@ fun main() {
     val input = readLines("Day24")
     val monad = Monad(input)
 
-    println("Part 1 : ${monad.getMaxValidPattern()}")
-
+    println("Part 1 : ${monad.getMaxNumber()}")
+    println("Part 2 : ${monad.getMinNumber()}")
 }
 
-data class MonadInstruction(val ins :String, val param1:String, val param2: String?)
+class SubRoutine(instructions: List<String>) {
+    val x = instructions[5].split(" ")[2].toInt()
+    val y = instructions[15].split(" ")[2].toInt()
+    val isIncreaseZ = x > 0
 
-class SubMonad(instructions: List<String>) {
-    var variables = mutableMapOf("w" to 0, "x" to 0, "y" to 0, "z" to 0)
-
-    private val instructions = instructions.map{it.split(" ")}.map{MonadInstruction(it[0],it[1],it.getOrNull(2)) }
-
-    fun exec(input: Int) {
-        instructions.forEach {
-            when (it.ins) {
-                "inp" -> variables[it.param1] = input
-                "add" -> variables[it.param1] =
-                    (variables[it.param1] ?: 0) + (it.param2!!.toIntOrNull() ?: variables[it.param2]!!)
-                "mul" -> variables[it.param1] =
-                    (variables[it.param1] ?: 0) * (it.param2!!.toIntOrNull() ?: variables[it.param2]!!)
-                "div" -> variables[it.param1] =
-                    (variables[it.param1] ?: 0) / (it.param2!!.toIntOrNull() ?: variables[it.param2]!!)
-                "mod" -> variables[it.param1] =
-                    (variables[it.param1] ?: 0) % (it.param2!!.toIntOrNull() ?: variables[it.param2]!!)
-                "eql" -> variables[it.param1] = if ((variables[it.param1] ?: 0) == (it.param2!!.toIntOrNull()
-                        ?: variables[it.param2]!!)
-                ) 1 else 0
-            }
-        }
+    fun getValidInputs( ) : Map<Int, Int> {
+        return if( isIncreaseZ ) (1..9).associateBy {  it + y }
+        else (0..25).filter { it + x in (1..9) }.associateWith { it + x }
     }
-
 }
 
 class Monad(instructions: List<String>) {
 
-    private val subMonads = instructions.chunked { it.startsWith("inp") }.filterNot { it.isEmpty() }.map(::SubMonad)
+    private val validPatterns = instructions.chunked(18)
+        .map(::SubRoutine)
+        .getValidPatterns()
 
-    fun validNumber(number: Long): Boolean {
+    fun getMinNumber() = validPatterns.joinToString("") {it.first().toString()}
+    fun getMaxNumber() = validPatterns.joinToString("") {it.last().toString()}
 
-        var variables = mapOf("w" to 0, "x" to 0, "y" to 0, "z" to 0)
-        val input = number.toString().map { it.digitToInt() }
-        subMonads.forEachIndexed { i, subMonad ->
-            subMonad.variables = variables.toMutableMap()
-            subMonad.exec(input[i])
-            variables = subMonad.variables
+    private fun List<SubRoutine>.getValidPatterns() : List<List<Int>> {
+        val patterns = MutableList(14){ listOf<Int>() }
+        val zStack = ArrayDeque<Pair<Int,Map<Int,Int>>>()
+        this.forEachIndexed{ i, subRoutine ->
+            if(subRoutine.isIncreaseZ) zStack.add(i to subRoutine.getValidInputs())
+            else{
+                val (stackedIndex, stackedInputs) = zStack.removeLast()
+                val inputs = subRoutine.getValidInputs()
+                val commonZInputs = stackedInputs.keys.intersect(inputs.keys)
+                patterns[stackedIndex] = commonZInputs.mapNotNull{stackedInputs[it]}
+                patterns[i] = commonZInputs.mapNotNull{inputs[it]}
+            }
         }
-        return variables["z"] == 0
+        return patterns
     }
-
-    fun getMaxValidPattern(
-        subMonadId: Int = 0,
-        variables: Map<String, Int> = mapOf("w" to 0, "x" to 0, "y" to 0, "z" to 0)
-    ): String? {
-        if (subMonadId == subMonads.size) {
-            return "".takeIf { variables["z"] == 0 }
-        }
-
-        for (i in 9 downTo 1) {
-            subMonads[subMonadId].variables = variables.toMutableMap()
-            subMonads[subMonadId].exec(i)
-            getMaxValidPattern(subMonadId + 1, subMonads[subMonadId].variables)?.let { return "$i$it" }
-        }
-        return null
-    }
-
 }
