@@ -1,8 +1,5 @@
 package fr.vco.adventofcode.y2020
 
-import fr.vco.adventofcode.getInputReader
-import fr.vco.adventofcode.split
-
 
 fun main() {
     val input = getInputReader("/2020/inputDay20.txt")

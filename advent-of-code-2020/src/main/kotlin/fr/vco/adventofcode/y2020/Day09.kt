@@ -1,7 +1,5 @@
 package fr.vco.adventofcode.y2020
 
-import fr.vco.adventofcode.getInputReader
-
 const val PREAMBLE_SIZE = 25
 
 fun main() {

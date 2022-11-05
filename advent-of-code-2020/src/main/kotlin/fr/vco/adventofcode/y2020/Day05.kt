@@ -1,6 +1,5 @@
 package fr.vco.adventofcode.y2020
 
-import fr.vco.adventofcode.getInputReader
 
 const val COLUMN_SIZE = 8
 const val ROW_SIZE = 128
