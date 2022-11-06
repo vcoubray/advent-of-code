@@ -12,7 +12,7 @@ data class Ingredient( val quantity : Long,val chemical :String ) {
 
 fun main() {
 
-    val input = getInputReader("/2019/inputDay14.txt")
+    val input = getInputReader("/inputDay14.txt")
     val recipes = createRecipe(input)
     println("Part 1 : ${getOreQuantity(recipes, Ingredient(1, "FUEL"))}")
 

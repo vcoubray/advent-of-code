@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2020
 
 
 fun main() {
-    val input = getInputReader("/2020/inputDay20.txt")
+    val input = getInputReader("/inputDay20.txt")
     val lines = input.readLines()
 
     val tiles = lines.split { it.isBlank() }.filter { it.isNotEmpty() }.map {

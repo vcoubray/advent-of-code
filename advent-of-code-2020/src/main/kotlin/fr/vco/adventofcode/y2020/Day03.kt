@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2020
 
 
 fun main() {
-    val input = getInputReader("/2020/inputDay03.txt")
+    val input = getInputReader("/inputDay03.txt")
     val forest = input.readLines().map { it.map { c -> c == '#' } }
 
     val toboggan = TobogganArea(forest)

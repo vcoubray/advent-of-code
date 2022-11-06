@@ -5,7 +5,7 @@ import java.util.*
 
 
 fun main() {
-    val input = getInputReader("/2020/inputDay18.txt")
+    val input = getInputReader("/inputDay18.txt")
     val lines = input.readLines()
 
     println("Part 1 : ${lines.map { transformPostfix(it) { 0 } }.map(::evalPostfix).sum()}")

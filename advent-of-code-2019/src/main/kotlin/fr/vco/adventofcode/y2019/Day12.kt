@@ -4,7 +4,7 @@ import kotlin.math.abs
 
 fun main() {
 
-    val input = getInputReader("/2019/inputDay12.txt")
+    val input = getInputReader("/inputDay12.txt")
 
     val moons = mutableListOf<Moon>()
     input.forEachLine { line ->

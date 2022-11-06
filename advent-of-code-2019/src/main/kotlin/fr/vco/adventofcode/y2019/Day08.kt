@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2019
 
 fun main() {
 
-    val input = getInputReader("/2019/inputDay08.txt")
+    val input = getInputReader("/inputDay08.txt")
 
     val image =
         Image(25, 6, input.readText().map { it.toString().toInt() })

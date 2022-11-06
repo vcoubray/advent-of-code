@@ -4,7 +4,7 @@ import kotlin.math.max
 
 fun main() {
 
-    val input = getInputReader("/2019/inputDay07.txt")
+    val input = getInputReader("/inputDay07.txt")
     val intCode = input.readText().trim().split(",").map { it.toLong() }
 
     val settingsPart1 = listOf(0, 1, 2, 3, 4)

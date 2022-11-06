@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2020
 
 
 fun main() {
-    val input = getInputReader("/2020/inputDay19.txt")
+    val input = getInputReader("/inputDay19.txt")
     val lines = input.readLines()
 
     val (rulesExp, messages) = lines.filterNot { it.isBlank() }.partition { "(\\d)+:.*".toRegex().matches(it) }

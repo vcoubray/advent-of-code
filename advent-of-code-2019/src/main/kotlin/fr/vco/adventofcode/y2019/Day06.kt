@@ -5,13 +5,13 @@ import java.util.*
 
 fun main () {
 
-    val input = getInputReader("/2019/inputDay06.txt")
+    val input = getInputReader("/inputDay06.txt")
     val (origin,you,santa) = createOrbitTree(input)
 
 
     println("Part 1 : ${getOrbitCount(origin)}")
 
-    val inputTest = getInputReader("/2019/inputDay06Test.txt")
+    val inputTest = getInputReader("/inputDay06Test.txt")
     val (_,youTest,santaTest) = createOrbitTree(inputTest)
     println("Part 2 Test : ${getShortestPath(youTest, santaTest)}")
     println("Part 2 : ${getShortestPath(you, santa)}")

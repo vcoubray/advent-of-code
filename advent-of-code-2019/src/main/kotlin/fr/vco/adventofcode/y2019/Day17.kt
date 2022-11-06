@@ -1,7 +1,7 @@
 package fr.vco.adventofcode.y2019
 
 fun main() {
-    val input = getInputReader("/2019/inputDay17.txt")
+    val input = getInputReader("/inputDay17.txt")
 
     val opCode = input.readText().toOpCode()
     while (!opCode.isEnded()) {

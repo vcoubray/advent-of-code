@@ -5,7 +5,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 fun main() {
-    val input = getInputReader("/2019/inputDay03.txt")
+    val input = getInputReader("/inputDay03.txt")
     val lines = input.readLines()
 
     solve(

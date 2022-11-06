@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2019
 
 fun main() {
 
-    val input = getInputReader("/2019/inputDay01.txt")
+    val input = getInputReader("/inputDay01.txt")
     val fuels = input.readLines().map { it.toInt()/3-2}
     val totalFuel = fuels.sum()
     println("Part 1 : $totalFuel")

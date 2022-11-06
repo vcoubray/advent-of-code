@@ -11,7 +11,7 @@ const val BALL = 4
 data class Tile(val x: Int, val y: Int, val type: Int)
 
 fun main() {
-    val input = getInputReader("/2019/inputDay13.txt")
+    val input = getInputReader("/inputDay13.txt")
     val intCode = input.readText().trim().split(",").map { it.toLong() }.toMutableList()
 
 

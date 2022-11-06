@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2020
 
 
 fun main() {
-    val input = getInputReader("/2020/inputDay24.txt")
+    val input = getInputReader("/inputDay24.txt")
     val lines = input.readLines()
 
     val tiles = mutableMapOf<Hexagon, Boolean>()

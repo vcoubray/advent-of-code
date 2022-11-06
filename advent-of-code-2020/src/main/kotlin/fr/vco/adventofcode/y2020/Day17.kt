@@ -1,7 +1,7 @@
 package fr.vco.adventofcode.y2020
 
 fun main() {
-    val input = getInputReader("/2020/inputDay17.txt")
+    val input = getInputReader("/inputDay17.txt")
     val lines = input.readLines()
 
     val area = Area().apply { init(lines) }

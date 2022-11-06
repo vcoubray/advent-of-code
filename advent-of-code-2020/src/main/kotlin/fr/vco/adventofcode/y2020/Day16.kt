@@ -4,7 +4,7 @@ import kotlin.math.max
 import kotlin.math.min
 
 fun main() {
-    val input = getInputReader("/2020/inputDay16.txt")
+    val input = getInputReader("/inputDay16.txt")
     val lines = input.readLines()
 
     lateinit var fields : List<Field>

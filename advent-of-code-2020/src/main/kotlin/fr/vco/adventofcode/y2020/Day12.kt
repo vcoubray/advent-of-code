@@ -3,7 +3,7 @@ package fr.vco.adventofcode.y2020
 import kotlin.math.*
 
 fun main() {
-    val input = getInputReader("/2020/inputDay12.txt")
+    val input = getInputReader("/inputDay12.txt")
     val lines = input.readLines()
 
     println("Part 1 : ${lines.fold(Boat()){ boat, it -> boat.move(it)}.dist(ORIGIN)}")

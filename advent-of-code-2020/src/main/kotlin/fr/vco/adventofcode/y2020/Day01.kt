@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2020
 
 
 fun main() {
-    val input = getInputReader("/2020/inputDay01.txt")
+    val input = getInputReader("/inputDay01.txt")
     val expenses = input.readLines().map { it.toInt() }
 
     println("Part 1 : ${find(expenses,2020,2)}")
