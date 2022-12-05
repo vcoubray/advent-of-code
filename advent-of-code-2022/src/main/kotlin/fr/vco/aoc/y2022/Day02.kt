@@ -47,6 +47,3 @@ fun scorePart2(opp: String, me: String) = when (me) {
     "Z" -> WIN + handMap[opp]!!.lose
     else -> 0
 }
-
-
-
