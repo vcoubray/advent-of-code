@@ -25,7 +25,7 @@ class Forest(input: List<String>) {
     }
 
 
-    fun getScenicPoints(h: Int, w: Int): Int {
+    private fun getScenicPoints(h: Int, w: Int): Int {
         val currentTree = horizontalTrees[h][w]
         return listOf(
             horizontalTrees[h].drop(w + 1),
