@@ -2,8 +2,8 @@ package fr.vco.aoc.y2022
 
 fun main() {
     val input = readLines("Day02")
-    println("Part 1 : ${input.sumBy { computeScore(it, ::scorePart1) }}")
-    println("Part 2 : ${input.sumBy { computeScore(it, ::scorePart2) }}")
+    println("Part 1 : ${input.sumOf { computeScore(it, ::scorePart1) }}")
+    println("Part 2 : ${input.sumOf { computeScore(it, ::scorePart2) }}")
 }
 
 fun computeScore(round: String, score: (opp: String, me: String) -> Int): Int {

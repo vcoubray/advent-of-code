@@ -5,7 +5,7 @@ fun main() {
 
     val elvesPackages = input
         .split { it.isEmpty() }
-        .map { it.sumBy { calorie -> calorie.toInt() } }
+        .map { it.sumOf { calorie -> calorie.toInt() } }
 
     println("Part 1 : ${elvesPackages.maxOrNull()}")
     println("Part 2 : ${elvesPackages.sorted().takeLast(3).sum()}")
