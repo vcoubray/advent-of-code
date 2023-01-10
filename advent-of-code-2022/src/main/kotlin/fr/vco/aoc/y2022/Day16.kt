@@ -1,6 +1,5 @@
 package fr.vco.aoc.y2022
 
-const val MAX_TIME = 30
 fun main() {
     val input = readLines("Day16")
     val valves = input.map { """^Valve (\w+) .* rate=(\d+); .* valves? (.+)$""".toRegex().find(it)!!.destructured }
@@ -8,17 +7,13 @@ fun main() {
         .associateBy { it.id }
 
     val distances = valves.computeDistances()
-    val maxReleasedPressure = valves.maxReleasedPressure("AA",
-        0,
-        valves.filterNot { (_, v) -> v.flow == 0 }.keys,
-        distances
-    )
-
-    println("Part 1 : $maxReleasedPressure")
+    val openValves = valves.filterNot { (_, v) -> v.flow == 0 }.keys
+    println("Part 1 : ${valves.maxReleasedPressure("AA", "AA", 30, 30, openValves, distances, 1)}")
+    println("Part 2 : ${valves.maxReleasedPressure("AA", "AA", 26, 26, openValves, distances, 2)}")
 }
 
 data class Valve(val id: String, val flow: Int, val neighbours: List<String>) {
-    fun releasedFlow(elapsedMinutes: Int) = (MAX_TIME - elapsedMinutes) * flow
+    fun releasedFlow(minutesLeft: Int) = minutesLeft * flow
 }
 
 fun Map<String, Valve>.computeDistances(): Map<String, Map<String, Int>> {
@@ -42,21 +37,40 @@ fun Map<String, Valve>.computeDistances(start: String): Map<String, Int> {
 }
 
 fun Map<String, Valve>.maxReleasedPressure(
+    originValve: String,
     currentValve: String,
-    elapsedMinutes: Int,
-    openedValves: Set<String>,
+    initialMinutes: Int,
+    minutesLeft: Int,
+    openValves: Set<String>,
     distances: Map<String, Map<String, Int>>,
+    personCount: Int
 ): Int {
-    if (elapsedMinutes >= MAX_TIME) return 0
-    val releasedPressure = this[currentValve]!!.releasedFlow(elapsedMinutes)
-    val newOpenedValves = openedValves.filterNot { it == currentValve }.toSet()
-    return releasedPressure + (newOpenedValves.filter { distances[currentValve]!![it]!! + elapsedMinutes <= MAX_TIME }
-        .maxOfOrNull {
+    if (personCount <= 0) return 0
+    val releasedPressure = this[currentValve]!!.releasedFlow(minutesLeft)
+    val newOpenValves = openValves.filterNot { it == currentValve }.toSet()
+
+    val possibleNeighbours = newOpenValves.filter { minutesLeft - distances[currentValve]!![it]!! > 0 }
+    if (possibleNeighbours.isNotEmpty()) {
+        return releasedPressure + possibleNeighbours.maxOf {
             maxReleasedPressure(
+                originValve,
                 it,
-                distances[currentValve]!![it]!! + elapsedMinutes + 1,
-                newOpenedValves,
-                distances
+                initialMinutes,
+                minutesLeft - distances[currentValve]!![it]!! - 1,
+                newOpenValves,
+                distances,
+                personCount
             )
-        } ?: 0)
+        }
+    } else {
+        return releasedPressure + maxReleasedPressure(
+            originValve,
+            originValve,
+            initialMinutes,
+            initialMinutes,
+            newOpenValves,
+            distances,
+            personCount - 1
+        )
+    }
 }
