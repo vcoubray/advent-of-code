@@ -4,11 +4,9 @@ fun main() {
     val input = readLines("Day17").first()
     val winds = input.map { if (it == '>') RIGHT else LEFT }
 
-    println("Part 1 : ${RockStack(7, winds).play(2022).getHeight()}")
-    println("Part 2 : ${RockStack(7, winds).play(1000000000000).getHeight()}")
-
+    println("Part 1 : ${RockStack(7, winds).play(2022)}")
+    println("Part 2 : ${RockStack(7, winds).play(1000000000000)}")
 }
-
 
 data class Pos(val x: Int, val y: Long) {
     operator fun plus(pos: Pos) = Pos(x + pos.x, y + pos.y)
@@ -32,9 +30,7 @@ data class Rock(val pos: Pos, val type: Int) {
             listOf(Pos(0, 0), Pos(1, 0), Pos(0, 1), Pos(1, 1)),
         )
     }
-
     fun move(direction: Pos) = copy(pos = pos + direction)
-
 }
 
 
@@ -42,24 +38,24 @@ class RockStack(private val width: Int, private val winds: List<Pos>) {
     private val stack = mutableMapOf<Long, MutableList<Int>>()
     private var windId = 0
 
-    fun getHeight() = stack.maxOfOrNull { it.key + 1 } ?: 0
+    private fun getHeight() = stack.maxOfOrNull { it.key + 1 } ?: 0
 
-    fun isValidPos(pos: Pos) = when {
+    private fun isValidPos(pos: Pos) = when {
         pos.y < 0 -> false
         pos.x !in 0 until width -> false
         pos.y !in stack.keys -> true
         else -> pos.x !in stack[pos.y]!!
     }
 
-    fun isValidPos(rock: Rock) = rock.rock.all { isValidPos(it) }
+    private fun isValidPos(rock: Rock) = rock.rock.all { isValidPos(it) }
 
-    fun addRock(rock: Rock) = rock.rock.sortedBy { it.y }
+    private fun addRock(rock: Rock) = rock.rock.sortedBy { it.y }
         .forEach {
             if (it.y !in stack) stack[it.y] = mutableListOf(it.x)
             else stack[it.y]!!.add(it.x)
         }
 
-    fun playRock(rockType: Int) {
+    private fun playRock(rockType: Int) {
         var rock = Rock(Pos(2, getHeight() + 3), rockType)
         do {
             val lastY = rock.pos.y
@@ -67,7 +63,6 @@ class RockStack(private val width: Int, private val winds: List<Pos>) {
             windId++
             if (windId >= winds.size) windId = 0
         } while (rock.pos.y != lastY)
-
         addRock(rock)
     }
 
@@ -76,20 +71,55 @@ class RockStack(private val width: Int, private val winds: List<Pos>) {
         return newRock.move(DOWN).takeIf(::isValidPos) ?: newRock
     }
 
+    data class Log(var turn: Long, var rockType: Int, var height: Long, var topStack: List<List<Int>>) {
+        override fun equals(other: Any?): Boolean {
+            return if(other !is Log) false
+            else rockType == other.rockType && topStack == other.topStack
+        }
 
-    fun play(turn: Long) = apply {
+        override fun hashCode(): Int {
+            var result = rockType
+            result = 31 * result + topStack.hashCode()
+            return result
+        }
+
+        fun update(log: Log) {
+            turn = log.turn
+            rockType = log.rockType
+            height = log.height
+            topStack = log.topStack
+        }
+    }
+
+    fun play(turn: Long): Long {
+
+        val windsLogs = List(winds.size){Log(0,0,0, emptyList())}
+        val heightLogs = mutableListOf<Long>()
+
         var rockType = 0
         for (i in 0 until turn) {
             playRock(rockType)
+
+            val topStack = stack.keys.toList().sorted().takeLast(5).mapNotNull { stack[it]?.toList() }
+            val log = Log(i, rockType, getHeight(), topStack)
+
+            if (windsLogs[windId] == log) {
+
+                val cycleSize = log.turn - windsLogs[windId].turn
+                val startCycle = i - cycleSize
+                val cycleHeight = getHeight() - heightLogs[startCycle.toInt()]
+                val remainTurns = turn - i
+
+                val neededCycles = remainTurns / cycleSize
+                val turnNeeded = remainTurns % cycleSize - 1
+                return getHeight() + cycleHeight * neededCycles + heightLogs[(startCycle + turnNeeded).toInt()] - heightLogs[startCycle.toInt()]
+
+            }
+            windsLogs[windId].update(log)
+            heightLogs.add(getHeight())
             rockType++
             if (rockType >= Rock.ROCK_TYPE.size) rockType = 0
         }
+        return getHeight()
     }
-
-    fun print() {
-        stack.keys.reversed().forEach { it ->
-            println((0 until width).joinToString("") { j -> if (j in stack[it]!!) "#" else "." })
-        }
-    }
-
 }
