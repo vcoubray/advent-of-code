@@ -35,7 +35,7 @@ fun List<Droplet>.totalSurface() :Int{
 fun List<Droplet>.buildMatrix(): Map<Int, Map<Int, MutableMap<Int, Int>>> {
     val min = Droplet(minOf { it.x }, minOf { it.y }, minOf { it.z })
     val max = Droplet(maxOf { it.x }, maxOf { it.y }, maxOf { it.z })
-    println("$min $max")
+
     val matrix = buildMap {
         for (x in min.x - 1..max.x + 1) {
             put(x, buildMap {
@@ -83,7 +83,6 @@ fun List<Droplet>.exteriorSurface(): Int {
     var exteriorSurface = 0
     while (toVisit.isNotEmpty()) {
         val current = toVisit.removeFirst()
-
         directions.map { it + current }
             .filter { dropletMatrix[it] != null }
             .forEach {
