@@ -1,14 +1,10 @@
 package fr.vco.aoc.y2022
 
 import kotlin.math.max
-import kotlin.system.measureTimeMillis
 
-const val ORE_MASK = 1
 const val CLAY_MASK = 256
 const val OBSIDIAN_MASK = 65536
 const val GEODE_MASK = 16777216
-const val STOCK_MASK = 4294967296L
-
 
 fun main() {
     val input = readLines("Day19")
@@ -31,15 +27,26 @@ fun main() {
 
 }
 
+typealias Resources = Int
 
-data class Resources(val ore: Int = 0, val clay: Int = 0, val obsidian: Int = 0, val geode: Int = 0) {
-    operator fun plus(r: Resources) = Resources(ore + r.ore, clay + r.clay, obsidian + r.obsidian, geode + r.geode)
-    operator fun minus(r: Resources) = Resources(ore - r.ore, clay - r.clay, obsidian - r.obsidian, geode - r.geode)
-    fun isValid() = ore >= 0 && clay >= 0 && obsidian >= 0 && geode >= 0
-    fun isSuperior(r: Resources) = ore > r.ore || clay > r.clay || obsidian > r.obsidian
+fun Resources(ore: Int = 0, clay: Int = 0, obsidian: Int = 0, geode: Int = 0) =
+    ore + CLAY_MASK * clay + OBSIDIAN_MASK * obsidian + GEODE_MASK * geode
 
-    fun getId() = ore + CLAY_MASK * clay + OBSIDIAN_MASK * obsidian + GEODE_MASK * geode
+fun Resources.getGeodes() = this shr 24
+fun Resources.getObsidian() = (this and GEODE_MASK - 1) shr 16
+fun Resources.getClay() = (this and OBSIDIAN_MASK - 1) shr 8
+fun Resources.getOre() = (this and CLAY_MASK - 1)
+fun Resources.getString() =
+    "ore = ${getOre()}, clay = ${getClay()}, obsidian = ${getObsidian()}, geode = ${getGeodes()}"
+
+fun Resources.toBinaryString() = this.toString(2).padStart(32, '0').chunked(8).joinToString(" ")
+fun Resources.isSuperior(r: Resources): Boolean {
+    return this shr 24 > r shr 24 ||
+            this and (GEODE_MASK - 1) > r and (GEODE_MASK - 1) ||
+            this and (OBSIDIAN_MASK - 1) > r and (OBSIDIAN_MASK - 1) ||
+            this and (CLAY_MASK - 1) > r and (CLAY_MASK - 1)
 }
+
 
 data class Robot(val cost: Resources, val gain: Resources)
 
@@ -56,11 +63,12 @@ class Blueprint(
         Robot(obsidianRobotCost, Resources(obsidian = 1)),
         Robot(geodeRobotCost, Resources(geode = 1))
     )
-    val maxCost = robots.map { it.cost }.fold(Resources(geode = Int.MAX_VALUE)) { acc, costs ->
-        acc.copy(
-            ore = max(costs.ore, acc.ore),
-            clay = max(costs.clay, acc.clay),
-            obsidian = max(costs.obsidian, acc.obsidian)
+    val maxCost = robots.map { it.cost }.fold(Resources(geode = 127)) { acc, costs ->
+        Resources(
+            ore = max(costs.getOre(), acc.getOre()),
+            clay = max(costs.getClay(), acc.getClay()),
+            obsidian = max(costs.getObsidian(), acc.getObsidian()),
+            geode = acc.getGeodes()
         )
     }
 }
@@ -77,37 +85,33 @@ data class State(
             val newRobots = robots + robot.gain
             when {
                 newRobots.isSuperior(blueprint.maxCost) -> null
-                !(stock - robot.cost).isValid() -> null
+                robot.cost.isSuperior(stock) -> null
                 else -> State(this.minute + 1, stock + robots - robot.cost, newRobots, blueprint)
             }
         } +
                 State(minute + 1, stock + robots, robots, blueprint)
     }
-
-    fun getId() = stock.getId() * STOCK_MASK + robots.getId()
 }
 
 fun play(blueprint: Blueprint, minute: Int): Int {
     var maxGeode = 0
-    measureTimeMillis {
-        val stock = Resources()
-        val robots = Resources(ore = 1)
+    val stock = Resources()
+    val robots = Resources(ore = 1)
 
 
-        val start = State(0, stock, robots, blueprint)
-        val toVisit = ArrayDeque<State>().apply { add(start) }
-        val visited = mutableMapOf<Long, Boolean>()
-        visited[start.getId()] = true
-        while (toVisit.isNotEmpty()) {
-            val current = toVisit.removeFirst()
-            if (current.stock.geode > maxGeode) maxGeode = current.stock.geode
-            current.getNextStates()
-                .filter { it.minute <= minute && visited[it.getId()] != true }
-                .forEach { state ->
-                    toVisit.add(state)
-                    visited[state.getId()] = true
-                }
-        }
-    }.let { println("${blueprint.id} in ${it}ms ") }
+    val start = State(0, stock, robots, blueprint)
+    val toVisit = ArrayDeque<State>().apply { add(start) }
+    val visited = mutableMapOf<Int, Int>()
+    visited[start.robots] = start.stock
+    while (toVisit.isNotEmpty()) {
+        val current = toVisit.removeFirst()
+        if (current.stock.getGeodes() > maxGeode) maxGeode = current.stock.getGeodes()
+        current.getNextStates()
+            .filter { it.minute <= minute && it.stock.isSuperior(visited[it.robots] ?: 0) }
+            .forEach { state ->
+                toVisit.add(state)
+                visited[state.robots] = state.stock
+            }
+    }
     return maxGeode
 }
