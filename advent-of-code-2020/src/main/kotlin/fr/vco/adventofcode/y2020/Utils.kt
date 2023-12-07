@@ -2,9 +2,8 @@ package fr.vco.adventofcode.y2020
 
 import java.io.InputStreamReader
 
-
-fun getInputReader(filePath: String): InputStreamReader =
-    InputStreamReader(object {}.javaClass.getResource(filePath).openStream())
+fun getInputReader(fileName: String): InputStreamReader =
+    InputStreamReader(object {}.javaClass.getResource("/inputs/${fileName}.txt").openStream())
 
 
 fun <T> List<T>.split(predicate: (T) -> Boolean): List<List<T>> {

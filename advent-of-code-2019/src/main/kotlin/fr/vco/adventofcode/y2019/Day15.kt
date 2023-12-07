@@ -15,7 +15,7 @@ const val OX_SYSTEM = 2
 const val OX_UNKNOWN = 3
 fun main() {
 
-    val input = getInputReader("/inputDay15.txt")
+    val input = getInputReader("Day15")
     val intCode = input.readText().trim().split(",").map { it.toLong() }
 
     val droid = RepairDroid(intCode)

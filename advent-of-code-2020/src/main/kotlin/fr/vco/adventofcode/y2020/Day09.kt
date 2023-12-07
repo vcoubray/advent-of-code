@@ -3,7 +3,7 @@ package fr.vco.adventofcode.y2020
 const val PREAMBLE_SIZE = 25
 
 fun main() {
-    val input = getInputReader("/inputDay09.txt")
+    val input = getInputReader("Day09")
     val lines = input.readLines().map { it.toLong() }
 
     lines.drop(PREAMBLE_SIZE).forEachIndexed{i, it ->

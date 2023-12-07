@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2020
 
 
 fun main() {
-    val input = getInputReader("/inputDay11.txt")
+    val input = getInputReader("Day11")
     val lines = input.readLines()
 
     val seatLayout = SeatLayout(lines.toList())

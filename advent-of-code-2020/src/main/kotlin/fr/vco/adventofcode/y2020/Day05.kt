@@ -5,7 +5,7 @@ const val COLUMN_SIZE = 8
 const val ROW_SIZE = 128
 
 fun main() {
-    val input = getInputReader("/inputDay05.txt")
+    val input = getInputReader("Day05")
     val lines = input.readLines()
 
     val boardingPassIds = lines.map(::BoardingPass).map{it.id}.sorted()

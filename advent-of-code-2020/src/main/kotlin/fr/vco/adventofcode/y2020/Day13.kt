@@ -1,7 +1,7 @@
 package fr.vco.adventofcode.y2020
 
 fun main() {
-    val input = getInputReader("/inputDay13.txt")
+    val input = getInputReader("Day13")
     val lines = input.readLines()
 
     val timestamp = lines.first().toInt()

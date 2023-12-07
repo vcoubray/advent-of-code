@@ -4,7 +4,7 @@ import kotlin.system.measureTimeMillis
 
 
 fun main() {
-    val input = getInputReader("/inputDay15.txt")
+    val input = getInputReader("Day15")
     val lines = input.readLines()
     val firstNumbers = lines.first().split(",").map{it.toInt()}
 

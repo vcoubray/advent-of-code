@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2020
 
 
 fun main() {
-    val input = getInputReader("/inputDay10.txt")
+    val input = getInputReader("Day10")
     val adapters = input.readLines().map { it.toInt() }.sorted()
 
     var last = 0

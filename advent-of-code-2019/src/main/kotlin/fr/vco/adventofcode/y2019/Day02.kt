@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2019
 
 
 fun main() {
-    val input = getInputReader("/inputDay02.txt")
+    val input = getInputReader("Day02")
     val opCode = input.readText().trim().split(",").map{it.toInt()}
 
     println("Part 1 : ${opCode.toMutableList().exec(12,2)}")

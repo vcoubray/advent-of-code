@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2020
 
 
 fun main() {
-    val input = getInputReader("/inputDay04.txt")
+    val input = getInputReader("Day04")
     val passports = mutableListOf(Passport())
     input.readLines().forEach {
         if (it.isEmpty()) passports.add(Passport())

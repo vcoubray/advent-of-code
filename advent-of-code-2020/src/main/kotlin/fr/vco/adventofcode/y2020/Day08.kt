@@ -1,7 +1,7 @@
 package fr.vco.adventofcode.y2020
 
 fun main() {
-    val input = getInputReader("/inputDay08.txt")
+    val input = getInputReader("Day08")
     val lines = input.readLines()
 
     val code = BootCode(lines.map { it.split(" ") }.map { it.first() to it.last().toInt() })

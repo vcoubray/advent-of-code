@@ -3,7 +3,7 @@ package fr.vco.adventofcode.y2019
 import java.util.PriorityQueue
 
 fun main() {
-    val input = getInputReader("/inputDay18.txt")
+    val input = getInputReader("Day18")
 
     val mazeBuilder = MazeBuilder(input.readLines())
 

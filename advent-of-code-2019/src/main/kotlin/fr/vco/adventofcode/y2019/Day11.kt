@@ -13,7 +13,7 @@ private const val LEFT = 3
 
 fun main() {
 
-    val input = getInputReader("/inputDay11.txt")
+    val input = getInputReader("Day11")
     val intCode = input.readText().trim().split(",").map { it.toLong() }
 
     val panels = Panels(BLACK)

@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2020
 
 
 fun main() {
-    val input = getInputReader("/inputDay06.txt")
+    val input = getInputReader("tDay06")
     val lines = input.readLines()
 
     val groups = mutableListOf(mutableListOf<Set<Char>>())

@@ -4,7 +4,7 @@ import java.util.*
 
 
 fun main() {
-    val input = getInputReader("/inputDay07.txt")
+    val input = getInputReader("Day07")
     val lines = input.readLines()
 
     val bags = mutableMapOf<String, Bag>()

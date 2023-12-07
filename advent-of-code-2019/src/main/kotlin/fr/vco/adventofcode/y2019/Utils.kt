@@ -3,11 +3,11 @@ package fr.vco.adventofcode.y2019
 import java.io.InputStreamReader
 
 
-fun readLines(name: String) = getInputReader("/input${name}.txt").readLines()
-fun readText(name: String) = getInputReader("/input${name}.txt").readText()
+fun readLines(name: String) = getInputReader(name).readLines()
+fun readText(name: String) = getInputReader(name).readText()
 
-fun getInputReader(filePath: String): InputStreamReader =
-    InputStreamReader(object {}.javaClass.getResource(filePath).openStream())
+fun getInputReader(fileName: String): InputStreamReader =
+    InputStreamReader(object {}.javaClass.getResource("/inputs/${fileName}.txt").openStream())
 
 
 fun <T> List<T>.split(predicate: (T) -> Boolean): List<List<T>> {

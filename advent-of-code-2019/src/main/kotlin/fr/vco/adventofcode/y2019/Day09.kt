@@ -14,7 +14,7 @@ fun main() {
     println("Test 2 : $test2")
     println("Test 3 : $test3")
 
-    val input = getInputReader("/inputDay09.txt")
+    val input = getInputReader("Day09")
     val intCode = input.readText().trim().split(",").map { it.toLong() }
     println("Part 1 : ${execDay9(intCode, 1)}")
     println("Part 2 : ${execDay9(intCode, 2)}")

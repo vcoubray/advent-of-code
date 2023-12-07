@@ -5,21 +5,11 @@ import kotlin.math.*
 
 fun main() {
 
-    val inputTest1 = getInputReader("/inputDay10Test1.txt")
-    val inputTest2 = getInputReader("/inputDay10Test2.txt")
-    val inputTest3 = getInputReader("/inputDay10Test3.txt")
-    val inputTest4 = getInputReader("/inputDay10Test4.txt")
-    val input = getInputReader("/inputDay10.txt")
 
-    println("Part 1 - Test 1 : ${getBestDetection(inputTest1)}") // Should be 33
-    println("Part 1 - Test 2 : ${getBestDetection(inputTest2)}") // Should be 35
-    println("Part 1 - Test 3 : ${getBestDetection(inputTest3)}") // Should be 41
-    println("Part 1 - Test 4 : ${getBestDetection(inputTest4)}") // Should be 210
+    val input = getInputReader("Day10")
     println("Part 1 : ${getBestDetection(input)}")
 
-    val inputPart2Test1 = getInputReader("/inputDay10Test4.txt")
-    val inputPart2 = getInputReader("/inputDay10.txt")
-    println("Part 2 - Test 1 : ${getDestroyedAsteroidAt(inputPart2Test1, 200)}") // Should be 802
+    val inputPart2 = getInputReader("Day10")
     println("Part 2 : ${getDestroyedAsteroidAt(inputPart2, 200)}")
 }
 

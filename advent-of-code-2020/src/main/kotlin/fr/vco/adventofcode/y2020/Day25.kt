@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2020
 
 
 fun main(){
-    val input = getInputReader("/inputDay25.txt")
+    val input = getInputReader("Day25")
     val lines = input.readLines()
     val (cardKey, doorKey ) = lines.map{Key(it.toInt())}
 

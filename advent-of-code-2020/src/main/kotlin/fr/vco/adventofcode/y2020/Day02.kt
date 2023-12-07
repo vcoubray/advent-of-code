@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2020
 
 
 fun main() {
-    val input = getInputReader("/inputDay02.txt")
+    val input = getInputReader("Day02")
     val lines = input.readLines()
     val passwords = lines.map{
         val (range, letter, password) = it.split(" ")

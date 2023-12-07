@@ -2,7 +2,7 @@ package fr.vco.adventofcode.y2019
 
 fun main() {
 
-    val input = getInputReader("/inputDay05.txt")
+    val input = getInputReader("Day05")
     val opCodeStr = input.readText().trim().split(",").map { it.toLong() }
 
     val stream = OpCodeStream()

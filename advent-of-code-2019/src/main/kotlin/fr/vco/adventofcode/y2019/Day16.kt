@@ -4,7 +4,7 @@ import kotlin.math.abs
 
 fun main() {
 
-    val input = getInputReader("/inputDay16.txt")
+    val input = getInputReader("Day16")
     val inputList = input.readText().trim().map{it.toString().toInt()}
 
 

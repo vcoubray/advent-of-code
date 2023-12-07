@@ -6,7 +6,7 @@ const val PLAYER_1 = 1
 const val PLAYER_2 = 2
 
 fun main() {
-    val input = getInputReader("/inputDay22.txt")
+    val input = getInputReader("Day22")
     val (deck1, deck2) = input.readLines()
         .split { it.isBlank() }
         .map { it.drop(1).map { card -> card.toInt() } }
