@@ -2,8 +2,8 @@ import java.io.IOException
 import java.net.URL
 import java.time.LocalDate
 
-repositories {
-    mavenCentral()
+plugins {
+    kotlin("jvm") version "1.9.21"
 }
 
 interface AocExtension {
@@ -41,7 +41,7 @@ class AocPlugin : Plugin<Project> {
                     }
                 } catch (e: IOException) {
                     if(e.message?.startsWith("Server returned HTTP response code: 400") == true){
-                        System.err.println("The session is probably not valid. Try to get a new one.")
+                        println("The session is probably not valid. Try to get a new one.")
                     }
                     throw e
                 }
@@ -54,11 +54,15 @@ class AocPlugin : Plugin<Project> {
 val aocSession: String by project
 
 subprojects {
+    repositories {
+        mavenCentral()
+    }
+
     apply<AocPlugin>()
     //Configure the extension using a DSL block
     configure<AocExtension> {
-        year.set(2023)
-        dest.set("${project.projectDir}/src/main/resources/inputs")
-        session.set(aocSession)
+        year = 2023
+        dest = "${project.projectDir}/src/main/resources/inputs"
+        session = aocSession
     }
 }
