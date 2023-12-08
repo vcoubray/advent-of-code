@@ -1,6 +1,9 @@
 package fr.vco.aoc.y2023
 
 import java.io.File
+import kotlin.math.absoluteValue
+import kotlin.math.max
+import kotlin.math.min
 
 private fun String.getInputFile() = File("advent-of-code-2023/src/main/resources/inputs", "$this.txt")
 fun readLines(fileName: String) = fileName.getInputFile().readLines()
@@ -13,3 +16,22 @@ inline fun List<String>.split(predicate: (String) -> Boolean): List<List<String>
     }
     return list
 }
+
+
+fun pgcd(a: Long, b: Long): Long {
+    if (a == 0L && b == 0L) return 0
+    var max = max(a, b)
+    var min = min(a, b)
+
+    while (min != 0L) {
+        val tmp = min
+        min = max % min
+        max = tmp
+    }
+    return max
+}
+
+
+fun ppcm(a: Long, b: Long) = (a * b).absoluteValue / pgcd(a, b)
+
+fun List<Long>.ppcm() = reduce { a, acc -> ppcm(a, acc) }
