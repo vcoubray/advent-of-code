@@ -32,6 +32,17 @@ fun pgcd(a: Long, b: Long): Long {
 }
 
 
-fun ppcm(a: Long, b: Long) = (a * b).absoluteValue / pgcd(a, b)
+data class Position(val x: Int, val y: Int) {
+    operator fun plus(p: Position) = Position(x + p.x, y + p.y)
+}
+enum class Direction(val vector: Position){
+    NORTH (Position(0,-1)),
+    EAST (Position(1,0)),
+    SOUTH (Position(0,1)),
+    WEST (Position(-1,0)),
+}
 
+
+fun ppcm(a: Long, b: Long) = (a * b).absoluteValue / pgcd(a, b)
 fun List<Long>.ppcm() = reduce { a, acc -> ppcm(a, acc) }
+
