@@ -11,20 +11,20 @@ fun main() {
 class DonutMaze(input: List<String>) {
     data class Node(val id: Int, val levelDiff: Int = 0)
 
-    val directions = listOf(
+    private val directions = listOf(
         Position(1, 0),
         Position(-1, 0),
         Position(0, 1),
         Position(0, -1)
     )
-    val width = input.first().length
-    val height = input.size
+    private val width = input.first().length
+    private val height = input.size
 
-    val maze = input.joinToString("")
-    val neighbors = List(width * height) { maze.getNeighbors(it) }
-    val start: Int
-    val end: Int
-    
+    private val maze = input.joinToString("")
+    private val neighbors = List(width * height) { maze.getNeighbors(it) }
+    private val start: Int
+    private val end: Int
+
     init {
         val portals = mutableListOf<Pair<String, Int>>()
         maze.forEachIndexed { i, c ->
@@ -99,8 +99,8 @@ class DonutMaze(input: List<String>) {
             if (current == end && level == 0) {
                 return visited[current]!!
             }
-            neighbors[id].filter{level + it.levelDiff >= 0 }
-                .map { (level + it.levelDiff) * maze.length + it.id  }
+            neighbors[id].filter { level + it.levelDiff >= 0 }
+                .map { (level + it.levelDiff) * maze.length + it.id }
                 .filter { visited[it] == null }
                 .forEach { n ->
                     visited[n] = visited[current]!! + 1
