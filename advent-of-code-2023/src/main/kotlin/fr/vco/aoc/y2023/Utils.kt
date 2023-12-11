@@ -34,6 +34,7 @@ fun pgcd(a: Long, b: Long): Long {
 
 data class Position(val x: Int, val y: Int) {
     operator fun plus(p: Position) = Position(x + p.x, y + p.y)
+    fun distanceManhattan(p: Position) = (p.x - x).absoluteValue + (p.y - y).absoluteValue
 }
 enum class Direction(val vector: Position){
     NORTH (Position(0,-1)),
