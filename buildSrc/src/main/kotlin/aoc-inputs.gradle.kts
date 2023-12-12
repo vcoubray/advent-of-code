@@ -29,7 +29,6 @@ class AocPlugin : Plugin<Project> {
                     LocalDate.of(extension.year.get(), 12, 25)
                 )
                     .minOrNull()!!
-                println(maxDate)
                 val maxDay = maxDate.dayOfMonth
 
                 try {
