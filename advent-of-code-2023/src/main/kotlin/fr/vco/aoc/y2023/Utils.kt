@@ -36,14 +36,25 @@ data class Position(val x: Int, val y: Int) {
     operator fun plus(p: Position) = Position(x + p.x, y + p.y)
     fun distanceManhattan(p: Position) = (p.x - x).absoluteValue + (p.y - y).absoluteValue
 }
-enum class Direction(val vector: Position){
-    NORTH (Position(0,-1)),
-    EAST (Position(1,0)),
-    SOUTH (Position(0,1)),
-    WEST (Position(-1,0)),
+
+enum class Direction(val vector: Position) {
+    NORTH(Position(0, -1)),
+    EAST(Position(1, 0)),
+    SOUTH(Position(0, 1)),
+    WEST(Position(-1, 0)),
 }
 
 
 fun ppcm(a: Long, b: Long) = (a * b).absoluteValue / pgcd(a, b)
 fun List<Long>.ppcm() = reduce { a, acc -> ppcm(a, acc) }
 
+
+fun <T> List<List<T>>.transposed(): List<List<T>> {
+    val transposedList = List<MutableList<T>>(this.first().size) { mutableListOf() }
+    this.forEach { line ->
+        line.forEachIndexed { i, it -> transposedList[i].add(it) }
+    }
+    return transposedList
+}
+
+fun transpose(strings: List<String>): List<String> = strings.map { it.toList() }.transposed().map { it.joinToString() }
