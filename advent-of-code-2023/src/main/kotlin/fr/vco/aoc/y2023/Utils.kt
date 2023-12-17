@@ -33,13 +33,16 @@ fun transpose(strings: List<String>): List<String> = strings.map { it.toList() }
 // Geometry
 data class Position(val x: Int, val y: Int) {
     operator fun plus(p: Position) = Position(x + p.x, y + p.y)
+    operator fun unaryMinus() = Position(-x, -y)
+    operator fun times(multiplier: Int) = Position(multiplier * x, multiplier * y)
     fun distanceManhattan(p: Position) = (p.x - x).absoluteValue + (p.y - y).absoluteValue
 }
-enum class Direction(val vector: Position){
-    NORTH (Position(0,-1)),
-    EAST (Position(1,0)),
-    SOUTH (Position(0,1)),
-    WEST (Position(-1,0)),
+
+enum class Direction(val vector: Position) {
+    NORTH(Position(0, -1)),
+    EAST(Position(1, 0)),
+    SOUTH(Position(0, 1)),
+    WEST(Position(-1, 0)),
 }
 
 // Math
