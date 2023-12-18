@@ -36,6 +36,14 @@ data class Position(val x: Int, val y: Int) {
     operator fun unaryMinus() = Position(-x, -y)
     operator fun times(multiplier: Int) = Position(multiplier * x, multiplier * y)
     fun distanceManhattan(p: Position) = (p.x - x).absoluteValue + (p.y - y).absoluteValue
+    fun toPositionLong() = PositionLong(x.toLong(), y.toLong())
+}
+
+data class PositionLong(val x: Long, val y: Long) {
+    operator fun plus(p: PositionLong) = PositionLong(x + p.x, y + p.y)
+    operator fun unaryMinus() = PositionLong(-x, -y)
+    operator fun times(multiplier: Long) = PositionLong(multiplier * x, multiplier * y)
+    fun distanceManhattan(p: PositionLong) = (p.x - x).absoluteValue + (p.y - y).absoluteValue
 }
 
 enum class Direction(val vector: Position) {
