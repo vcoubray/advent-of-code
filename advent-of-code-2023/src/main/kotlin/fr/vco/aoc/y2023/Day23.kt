@@ -4,9 +4,9 @@ fun main() {
     val input = readLines("Day23")
     val hike = HikeTrail(input)
 
-    println("Part 1 : ${hike.findLongestPath()}")
+    println("Part 1 : ${findLongestPath(hike.crossingGraph)}")
+    println("Part 2 : ${findLongestPath(hike.crossingGraphCyclic)}")
 }
-
 
 class HikeTrail(input: List<String>) {
 
@@ -29,11 +29,22 @@ class HikeTrail(input: List<String>) {
         }.map { p -> p.toId() }
     }
 
-    val crossingGraph = findCrossingGraph()
+    val cyclicNeighbours = List(height * width) {
+        val pos = Position(it % width, it / height)
+        when (input[pos.y][pos.x]) {
+            '#' -> emptyList()
+            else -> Direction.entries.map { d -> pos + d.vector }
+                .filter { (x, y) -> x in 0..<width && y in 0..<height }
+                .filter { (x, y) -> input[y][x] != '#' }
+        }.map { p -> p.toId() }
+    }
+
+    val crossingGraph = findCrossingGraph(neighbours)
+    val crossingGraphCyclic = findCrossingGraph(cyclicNeighbours)
 
     private fun Position.toId() = y * width + x
 
-    fun findCrossingGraph(): List<Map<Int, Int>> {
+    private fun findCrossingGraph(neighbours: List<List<Int>>): List<Map<Int, Int>> {
         val crossings = mutableListOf(start)
         neighbours.forEachIndexed { i, it -> if (it.size >= 3) crossings.add(i) }
         crossings.add(end)
@@ -59,27 +70,22 @@ class HikeTrail(input: List<String>) {
                     }
             }
         }
-
         return distances
     }
+}
 
-    fun findLongestPath() : Int{
-        val start = 0
-        val toVisit = ArrayDeque<Int>().apply { add(start) }
-        val visited = MutableList(crossingGraph.size) { -1 }
-        visited[start] = 0
+fun findLongestPath(crossingGraph: List<Map<Int, Int>>) =
+    findLongestPathRecursively( crossingGraph, 0, 0, listOf(0))
 
-        while (toVisit.isNotEmpty()) {
-            val current = toVisit.removeFirst()
-            crossingGraph[current].forEach{n, d ->
-                val dist = d + visited[current]
-                if(visited[n] < dist) {
-                    visited[n] = dist
-                    toVisit.add(n)
-                }
-            }
-        }
-        return visited.last()
+
+fun findLongestPathRecursively(crossingGraph: List<Map<Int, Int>>, current: Int, distance: Int, visited: List<Int>): Int {
+    if (current == crossingGraph.lastIndex) {
+        return distance
     }
+    val neighbours = crossingGraph[current].filter { (n, _) -> n !in visited }
+    if (neighbours.isEmpty()) return 0
 
+    return neighbours.maxOf { (n, d) ->
+        findLongestPathRecursively(crossingGraph, n, d + distance, visited + n)
+    }
 }
