@@ -29,6 +29,8 @@ fun <T> List<List<T>>.transposed(): List<List<T>> {
 
 fun transpose(strings: List<String>): List<String> = strings.map { it.toList() }.transposed().map { it.joinToString() }
 
+fun IntRange.size()= last - first
+
 
 // Geometry
 data class Position(val x: Int, val y: Int) {
