@@ -1,6 +1,8 @@
 package fr.vco.aoc.y2023
 
 import java.io.File
+import java.math.BigDecimal
+import java.math.BigInteger
 import kotlin.math.absoluteValue
 import kotlin.math.max
 import kotlin.math.min
@@ -72,3 +74,4 @@ fun pgcd(a: Long, b: Long): Long {
 fun ppcm(a: Long, b: Long) = (a * b).absoluteValue / pgcd(a, b)
 fun List<Long>.ppcm() = reduce { a, acc -> ppcm(a, acc) }
 
+operator fun BigDecimal.times(value: BigInteger) = this.times(value.toBigDecimal())
