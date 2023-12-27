@@ -68,14 +68,11 @@ fun List<HailStone>.findRockPos(): BigInteger {
                 val interA = first().getHailStoneAt(timingA)
                 val interB = get(1).getHailStoneAt(timingB)
 
-                val rvx = (interA.x - interB.x) / (timingA - timingB)
-                val rvy = (interA.y - interB.y) / (timingA - timingB)
-                val rvz = (interA.z - interB.z) / (timingA - timingB)
+                val vz = (interA.z - interB.z) / (timingA - timingB)
 
-                val rx = interA.x - (rvx * timingA)
-                val ry = interA.y - (rvy * timingA)
-                val rz = interA.z - (rvz * timingA)
-
+                val rx = interA.x - (vx.toBigInteger() * timingA)
+                val ry = interA.y - (vy.toBigInteger() * timingA)
+                val rz = interA.z - (vz * timingA)
                 return rx + ry + rz
             }
         }
