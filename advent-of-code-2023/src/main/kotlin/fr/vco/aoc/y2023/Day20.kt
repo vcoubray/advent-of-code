@@ -3,8 +3,8 @@ package fr.vco.aoc.y2023
 fun main() {
     val input = readLines("Day20")
 
-    println("Part 1: ${ Modules(input).broadcast(1_000)}")
-
+    println("Part 1: ${Modules(input).broadcast(1_000)}")
+    println("Part 2: ${Modules(input).countPropagateUntilHighPulse()}")
 }
 
 data class Pulse(val source: String, val dest: String, val low: Boolean)
@@ -46,14 +46,14 @@ abstract class Module(val name: String, val destinations: List<String>) {
     }
 }
 
-data class ModulesState(val state: Map<String, List<Boolean>>, val lowCount: Long, val highCount: Long)
-
 class Modules(input: List<String>) {
 
     private val modules: Map<String, Module>
-    private val logs = mutableListOf<ModulesState>()
     private var lowCount: Long = 0
     private var highCount: Long = 0
+
+    private val start = "broadcaster"
+    private lateinit var end: String
 
     init {
         val inputs = mutableMapOf<String, MutableList<String>>()
@@ -61,6 +61,7 @@ class Modules(input: List<String>) {
         modules = input.map {
             val (type, name, dest) = """(^%|&|broadcaster)(.*) -> (.*$)""".toRegex().find(it)!!.destructured
             val dests = dest.split(", ")
+            if ("rx" in dests) end = name
             dests.forEach { d -> inputs.computeIfAbsent(d) { mutableListOf() }.add(name) }
             name to (type to dests)
         }
@@ -69,20 +70,19 @@ class Modules(input: List<String>) {
                 when (type) {
                     "%" -> name to Module.FlipFlop(name, dest)
                     "&" -> name to Module.Conjunction(name, dest, inputs[name] ?: emptyList())
-                    else -> "broadcaster" to Module.Broadcaster(name, dest)
+                    else -> start to Module.Broadcaster(name, dest)
                 }
             }
-        logs.add(getState())
     }
 
-    private fun broadcastOnePulse(): Map<String, Pair<Long, Long>> {
+    private fun broadcastOnePulse(startModule: String = this.start): Map<String, Pair<Long, Long>> {
 
-        val start = Pulse("button", "broadcaster", true)
+        val start = Pulse("", startModule, true)
         val toVisit = ArrayDeque<Pulse>().apply { addLast(start) }
 
         val lowPulses = mutableMapOf<String, Long>()
         val highPulses = mutableMapOf<String, Long>()
-        lowPulses["broadcaster"] = 1L
+        lowPulses[startModule] = 1L
 
         while (toVisit.isNotEmpty()) {
             val current = toVisit.removeFirst()
@@ -95,32 +95,24 @@ class Modules(input: List<String>) {
         }
         lowCount += lowPulses.values.sum()
         highCount += highPulses.values.sum()
-
         return (lowPulses.keys + highPulses.keys).associateWith { (lowPulses[it] ?: 0) to (highPulses[it] ?: 0) }
     }
 
     fun broadcast(count: Int): Long {
         for (i in 0..<count) {
             broadcastOnePulse()
-
-            val state = ModulesState(modules.map { (name, module) -> name to module.getState() }.toMap(), lowCount, highCount)
-            val logId = logs.map { it.state }.indexOf(state.state)
-            if (logId != -1) {
-                val loopSize = (i + 1) - logId
-                val rem = count - (i + 1)
-                val loopCount = rem / loopSize
-
-                val loopLow = (lowCount - logs[logId].lowCount) * loopCount
-                val loopHigh = (highCount - logs[logId].highCount) * loopCount
-                println("loop at $i turns")
-                return (lowCount + loopLow) * (highCount * loopHigh)
-            }
-            logs.add(state)
         }
         return lowCount * highCount
     }
 
-
-    private fun getState() = ModulesState(modules.map { (name, module) -> name to module.getState() }.toMap(), lowCount, highCount)
-
+    fun countPropagateUntilHighPulse(): Long {
+        return modules["broadcaster"]!!.destinations.map { name ->
+            var counter = 0L
+            do {
+                val pulses = broadcastOnePulse(name)
+                counter++
+            } while (pulses[end]!!.second == 0L)
+            counter
+        }.ppcm()
+    }
 }
