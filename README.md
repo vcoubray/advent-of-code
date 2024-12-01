@@ -7,6 +7,7 @@ My solutions in kotlin for the Advent of code challenges : https://adventofcode.
 * [Advent of Code 2021](./advent-of-code-2021)
 * [Advent of Code 2022](./advent-of-code-2022)
 * [Advent of Code 2023](./advent-of-code-2023)
+* [Advent of Code 2024](./advent-of-code-2024)
 
 ## Retrieve personal inputs
 
@@ -35,7 +36,7 @@ configure<Aoc_inputs_gradle.AocExtension> {
 }
 ```
 The plugin will automatically add all available inputs files for the specified `year` in the folder `dest`.
-The `session` can be retrieve from the cookies of your browser after login in adventofcode.com
+The `session` can be retrieved from the cookies of your browser after login in adventofcode.com
 
 
 ### Usage
