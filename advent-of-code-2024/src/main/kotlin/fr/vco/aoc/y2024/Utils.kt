@@ -9,3 +9,13 @@ data class Position(val x: Int, val y: Int) {
     operator fun plus(other: Position) = Position(x + other.x, y + other.y)
     operator fun times(value: Int) = Position(x * value, y * value)
 }
+
+// Lists
+inline fun List<String>.split(predicate: (String) -> Boolean): List<List<String>> {
+    val list = mutableListOf(mutableListOf<String>())
+    this.forEach {
+        if (predicate(it)) list.add(mutableListOf())
+        else list.last().add(it)
+    }
+    return list
+}
