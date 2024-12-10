@@ -4,6 +4,7 @@ import java.io.File
 
 private fun String.getInputFile() = File("advent-of-code-2024/src/main/resources/inputs", "$this.txt")
 fun readLines(fileName: String) = fileName.getInputFile().readLines()
+fun readText(fileName: String) = fileName.getInputFile().readText()
 
 data class Position(val x: Int, val y: Int) {
     operator fun plus(other: Position) = Position(x + other.x, y + other.y)
