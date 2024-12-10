@@ -7,17 +7,6 @@ fun main() {
     println("Part 2 : ${input.countXWord("MAS")}")
 }
 
-val DIRECTIONS = listOf(
-    Position(-1, -1),
-    Position(-1, 0),
-    Position(-1, 1),
-    Position(0, -1),
-    Position(0, 1),
-    Position(1, -1),
-    Position(1, 0),
-    Position(1, 1),
-)
-
 val DIAGONALS = listOf(
     Position(0, 0) to Position(1, 1),
     Position(0, 1) to Position(1, -1),
@@ -46,7 +35,7 @@ fun List<String>.countXWord(word: String): Int {
 }
 
 fun List<String>.hasXWord(word: String, pos: Position): Boolean {
-    return DIAGONALS.map { (start, dir) -> (pos + start * (word.length-1)) to dir }
+    return DIAGONALS.map { (start, dir) -> (pos + start * (word.length - 1)) to dir }
         .count { (start, dir) -> hasWord(word, start, dir) } == 2
 }
 

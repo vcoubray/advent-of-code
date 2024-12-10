@@ -12,6 +12,24 @@ data class Position(val x: Int, val y: Int) {
     operator fun times(value: Int) = Position(x * value, y * value)
 }
 
+val DIRECTION_MANHATTAN = listOf(
+    Position(-1, 0),
+    Position(0, -1),
+    Position(0, 1),
+    Position(1, 0)
+)
+
+val DIRECTIONS = listOf(
+    Position(-1, -1),
+    Position(-1, 0),
+    Position(-1, 1),
+    Position(0, -1),
+    Position(0, 1),
+    Position(1, -1),
+    Position(1, 0),
+    Position(1, 1),
+)
+
 // Lists
 inline fun List<String>.split(predicate: (String) -> Boolean): List<List<String>> {
     val list = mutableListOf(mutableListOf<String>())
