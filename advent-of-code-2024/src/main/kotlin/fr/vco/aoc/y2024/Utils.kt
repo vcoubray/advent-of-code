@@ -30,6 +30,13 @@ val DIRECTIONS = listOf(
     Position(1, 1),
 )
 
+
+operator fun <T> List<List<T>>.get(p: Position) = this[p.y][p.x]
+fun <T> List<List<T>>.getOrNull(p: Position) = this.getOrNull(p.y)?.getOrNull(p.x)
+operator fun <T> List<MutableList<T>>.set(p: Position, value: T) {
+    this[p.y][p.x] = value
+}
+
 // Lists
 inline fun List<String>.split(predicate: (String) -> Boolean): List<List<String>> {
     val list = mutableListOf(mutableListOf<String>())
