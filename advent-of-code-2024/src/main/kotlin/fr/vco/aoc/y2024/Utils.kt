@@ -32,7 +32,11 @@ val DIRECTIONS = listOf(
 
 
 operator fun <T> List<List<T>>.get(p: Position) = this[p.y][p.x]
+operator fun List<String>.get(p: Position) = this[p.y][p.x]
+
 fun <T> List<List<T>>.getOrNull(p: Position) = this.getOrNull(p.y)?.getOrNull(p.x)
+fun List<String>.getOrNull(p: Position) = this.getOrNull(p.y)?.getOrNull(p.x)
+
 operator fun <T> List<MutableList<T>>.set(p: Position, value: T) {
     this[p.y][p.x] = value
 }
