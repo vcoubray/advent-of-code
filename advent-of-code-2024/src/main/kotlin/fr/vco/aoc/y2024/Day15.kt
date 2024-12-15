@@ -30,7 +30,7 @@ fun List<String>.toWarehouse(wide: Int = 1): WarehouseState {
                     List(wide) { boxes.size - 1 }
                 }
                 else -> {
-                    start = Position(x, y)
+                    start = Position(wide * x , y)
                     List(wide) { EMPTY }
                 }
             }
