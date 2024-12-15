@@ -9,12 +9,8 @@ fun main() {
 
     val instructions = inputInstructions.joinToString("")
 
-    println("Part 1: ${grid.toWarehouse().apply{execute(instructions)}.getScore()}")
-    println("Part 2: ${grid.toWarehouse(2).apply{
-        execute(instructions)
-        boxes.sortedBy { it.first().y }.forEach(::println)
-    
-    }.getScore()}")
+    println("Part 1: ${grid.toWarehouse().apply { execute(instructions) }.getScore()}")
+    println("Part 2: ${grid.toWarehouse(2).apply { execute(instructions) }.getScore()}")
 }
 
 fun List<String>.toWarehouse(wide: Int = 1): WarehouseState {
@@ -26,11 +22,12 @@ fun List<String>.toWarehouse(wide: Int = 1): WarehouseState {
                 '#' -> List(wide) { WALL }
                 '.' -> List(wide) { EMPTY }
                 'O' -> {
-                    boxes.add( List(wide) { Position(wide * x + it, y ) })
+                    boxes.add(List(wide) { Position(wide * x + it, y) })
                     List(wide) { boxes.size - 1 }
                 }
+
                 else -> {
-                    start = Position(wide * x , y)
+                    start = Position(wide * x, y)
                     List(wide) { EMPTY }
                 }
             }
