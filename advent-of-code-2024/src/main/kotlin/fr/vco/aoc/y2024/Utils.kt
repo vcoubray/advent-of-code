@@ -13,11 +13,16 @@ data class Position(val x: Int, val y: Int) {
     fun mod(other: Position) = Position(x.mod(other.x), y.mod(other.y))
 }
 
+val EAST = Position(1, 0)
+val WEST = Position(-1, 0)
+val NORTH = Position(0, -1)
+val SOUTH = Position(0, 1)
+
 val DIRECTION_MANHATTAN = listOf(
-    Position(-1, 0),
-    Position(0, -1),
-    Position(0, 1),
-    Position(1, 0)
+    EAST,
+    SOUTH,
+    WEST,
+    NORTH
 )
 
 val DIRECTIONS = listOf(
