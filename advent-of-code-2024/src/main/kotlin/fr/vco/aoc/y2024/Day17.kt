@@ -9,22 +9,24 @@ fun main() {
     val intCode = intCodeString.first().substringAfter(" ").split(",").map { it.toInt() }
     val (a, b, c) = registers.toRegisterList()
 
-    println("Part 1: ${OpCode(a, b, c).execute(intCode).joinToString(",")}")
+    val opCode = OpCode(intCode)
+    println("Part 1: ${opCode.execute(a, b, c).joinToString(",")}")
+    println("Part 2: ${opCode.findRegisterA(b, c)}")
+
 }
 
-
 class OpCode(
-    private var registerA: Int,
-    private var registerB: Int,
-    private var registerC: Int,
+    private val intCode: List<Int>
 ) {
+    private var registerA = 0L
+    private var registerB = 0L
+    private var registerC = 0L
+    private var cursor = 0
+    private val out = mutableListOf<Int>()
 
-    var cursor = 0
-    val out = mutableListOf<Int>()
-
-    private fun getComboOperand(value: Int): Int {
+    private fun getComboOperand(value: Int): Long {
         return when (value) {
-            in 0..3 -> value
+            in 0..3 -> value.toLong()
             4 -> registerA
             5 -> registerB
             6 -> registerC
@@ -33,27 +35,42 @@ class OpCode(
     }
 
     private val operations = listOf<(Int) -> Unit>(
-        { value -> registerA = (registerA / 2.0.pow(getComboOperand(value))).toInt() },
-        { value -> registerB = registerB.xor(value) },
+        { value -> registerA = (registerA / 2.0.pow(getComboOperand(value).toDouble())).toLong() },
+        { value -> registerB = registerB.xor(value.toLong()) },
         { value -> registerB = (getComboOperand(value) % 8) },
-        { value -> if (registerA != 0) cursor = value - 2 },
+        { value -> if (registerA != 0L) cursor = value - 2 },
         { _ -> registerB = registerB.xor(registerC) },
-        { value -> out.add(getComboOperand(value) % 8) },
-        { value -> registerB = (registerA / 2.0.pow(getComboOperand(value))).toInt() },
-        { value -> registerC = (registerA / 2.0.pow(getComboOperand(value))).toInt() }
+        { value -> out.add((getComboOperand(value) % 8).toInt()) },
+        { value -> registerB = (registerA / 2.0.pow(getComboOperand(value).toDouble())).toLong() },
+        { value -> registerC = (registerA / 2.0.pow(getComboOperand(value).toDouble())).toLong() }
     )
 
-    fun execute(opCode: List<Int>): List<Int> {
+    fun execute(a: Long, b: Long, c: Long): List<Int> {
+        registerA = a
+        registerB = b
+        registerC = c
         cursor = 0
-
-        while (cursor < opCode.size) {
-            operations[opCode[cursor]](opCode[cursor + 1])
+        out.clear()
+        while (cursor < intCode.size) {
+            operations[intCode[cursor]](intCode[cursor + 1])
             cursor += 2
         }
         return out
     }
+
+    fun findRegisterA(b: Long, c: Long): Long {
+        var a = 0L
+        intCode.indices.forEach { i ->
+            var j = 0L
+            while (intCode.takeLast(i + 1) != this.execute(a * 8 + j, b, c)) {
+                j++
+            }
+            a = a * 8 + j
+        }
+        return a
+    }
 }
 
-fun List<String>.toRegisterList(): List<Int> {
-    return this.map { """Register .: (\d+)""".toRegex().find(it)!!.destructured.toList().first().toInt() }
+fun List<String>.toRegisterList(): List<Long> {
+    return this.map { """Register .: (\d+)""".toRegex().find(it)!!.destructured.toList().first().toLong() }
 }
