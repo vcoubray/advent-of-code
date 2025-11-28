@@ -9,6 +9,7 @@ import java.time.LocalDate
 
 interface AocExtension {
     val year: Property<Int>
+    val maxDay: Property<Int>
     val dest: Property<String>
     val session: Property<String>
 }
@@ -26,7 +27,7 @@ class AocPlugin : Plugin<Project> {
 
                 val maxDate = listOf(
                     LocalDate.now(),
-                    LocalDate.of(extension.year.get(), 12, 25)
+                    LocalDate.of(extension.year.get(), 12, extension.maxDay.get())
                 )
                     .minOrNull()!!
                 val maxDay = maxDate.dayOfMonth

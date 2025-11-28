@@ -7,4 +7,5 @@ include(
     "advent-of-code-2022",
     "advent-of-code-2023",
     "advent-of-code-2024",
+    "advent-of-code-2025",
 )

@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm")
+    kotlin("jvm") version "2.1.0"
 }
 
 configure<Aoc_inputs_gradle.AocExtension> {

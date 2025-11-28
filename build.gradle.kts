@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "2.1.0"
+//    kotlin("jvm") version "2.1.0"
     `aoc-inputs`
 }
 
@@ -16,6 +16,7 @@ subprojects {
 
     configure<Aoc_inputs_gradle.AocExtension> {
         dest = "${project.projectDir}/src/main/resources/inputs"
+        maxDay = 25
         session = aocSession
     }
 }
