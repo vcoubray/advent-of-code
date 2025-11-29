@@ -142,7 +142,7 @@ class OpCodeStream {
     }
 
     fun readln(value : String ) {
-        input.addAll("$value\n".map{it.toLong()})
+        input.addAll("$value\n".map{it.code.toLong()})
     }
 
 }

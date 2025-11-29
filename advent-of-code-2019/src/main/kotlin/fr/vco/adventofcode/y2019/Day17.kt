@@ -8,7 +8,7 @@ fun main() {
         opCode.exec()
     }
 
-    val maze = opCode.stream.output.map { it.toChar() }.joinToString("").lines()
+    val maze = opCode.stream.output.map { it.toInt().toChar() }.joinToString("").lines()
     opCode.stream.clear()
     println("Part 1 : ${maze.getIntersectionSum()}")
 
@@ -20,7 +20,7 @@ fun main() {
     routine.subRoutines.forEach { opCode.stream.readln(it.toString()) }
     opCode.stream.readln("n")
     opCode.exec()
-    println("Part 2 : ${opCode.stream.output.last}")
+    println("Part 2 : ${opCode.stream.output.last()}")
 
 }
 
@@ -119,7 +119,7 @@ private class SubRoutine(val name: String, val path: List<Move>) {
     override fun toString() = path.joinToString(",")
 }
 
-private class Routine(val initialPath: List<Move>, val subRoutines: List<SubRoutine>) {
+private class Routine(initialPath: List<Move>, val subRoutines: List<SubRoutine>) {
     val mainRoutine = subRoutines.fold(initialPath.joinToString(",")) { acc, a -> acc.replace(a.toString(), a.name) }
 }
 
@@ -130,8 +130,8 @@ private class RoutineBuilder(
 ) {
     val maxSubRoutine: Int = subRoutinesName.size
     fun build(): Routine {
-        findValidSubRoutines(initialPath, emptyList())?.let { subRoutines ->
-            return Routine(initialPath, subRoutines)
+        return findValidSubRoutines(initialPath, emptyList())?.let { subRoutines ->
+             Routine(initialPath, subRoutines)
         } ?: throw Exception("No valid subRoutines found")
     }
 

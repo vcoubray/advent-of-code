@@ -156,7 +156,7 @@ class Maze(
     private fun nextStates(state: MazeState): List<MazeState> {
         return state.reachable.mapIndexed { i, reachable ->
             reachable.filter { entity -> state.visited[entity] == false }
-                .filter { entity -> entity.isLowerCase() || state.visited[entity.toLowerCase()] == true }
+                .filter { entity -> entity.isLowerCase() || state.visited[entity.lowercaseChar()] == true }
                 .map { target ->
                     MazeState(
                         state.current.toMutableList().apply { this[i] = target },

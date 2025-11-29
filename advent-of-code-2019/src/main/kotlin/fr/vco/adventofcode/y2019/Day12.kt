@@ -34,7 +34,7 @@ class Orbits(val originMoons: List<Moon>) {
         repeat(steps) {
             moons.move()
         }
-        return moons.sumBy { it.getEnergy() }
+        return moons.sumOf { it.getEnergy() }
     }
 
     fun cycle(): Long {

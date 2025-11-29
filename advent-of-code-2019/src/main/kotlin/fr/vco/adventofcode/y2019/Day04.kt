@@ -18,7 +18,7 @@ fun Int.isValid(strict : Boolean ) : Boolean {
     val code = this.toString()
     var prevDigit = 0
     code.forEach {
-        val digit = it.toInt()
+        val digit = it.digitToInt()
         if (digit < prevDigit) return false
         prevDigit = digit
     }

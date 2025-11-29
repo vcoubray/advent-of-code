@@ -1,13 +1,14 @@
 package fr.vco.adventofcode.y2019
 
+import java.io.File
 import java.io.InputStreamReader
 
+fun getInputReader(fileName: String): InputStreamReader =  fileName.getInputFile().inputStream().reader()
+fun readLines(fileName: String) = fileName.getInputFile().readLines()
+fun readText(fileName: String) =  fileName.getInputFile().readText()
+private fun String.getInputFile() = File("advent-of-code-2019/src/main/resources/inputs", "$this.txt")
 
-fun readLines(name: String) = getInputReader(name).readLines()
-fun readText(name: String) = getInputReader(name).readText()
 
-fun getInputReader(fileName: String): InputStreamReader =
-    InputStreamReader(object {}.javaClass.getResource("/inputs/${fileName}.txt").openStream())
 
 
 fun <T> List<T>.split(predicate: (T) -> Boolean): List<List<T>> {
