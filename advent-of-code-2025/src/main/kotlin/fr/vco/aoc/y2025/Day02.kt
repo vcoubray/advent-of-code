@@ -14,9 +14,9 @@ fun main() {
 fun getInvalidIds(range: LongRange, maxDivisor: Int? = null): List<Long> {
     return (range).filter {
         val value = it.toString()
-        (2..(maxDivisor?:value.length)).any { divisor ->
+        (2..(maxDivisor ?: value.length)).any { divisor ->
             if (value.length % divisor != 0) false
-            else value.chunked(value.length/divisor).toSet().size == 1
+            else value.chunked(value.length / divisor).toSet().size == 1
         }
     }
 }
