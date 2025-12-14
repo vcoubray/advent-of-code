@@ -30,8 +30,7 @@ fun List<LongRange>.reduced(): List<LongRange> {
 }
 
 fun LongRange.overlaps(other: LongRange): Boolean {
-    return other.first in first..last || other.last in first..last || last in other.first..last
+    return other.first in first..last || other.last in first..last || last in other.first..other.last
 }
-
 fun LongRange.countLong() = last - first + 1
 
