@@ -2,6 +2,7 @@ package fr.vco.adventofcode.y2019
 
 import java.io.File
 import java.io.InputStreamReader
+import kotlin.math.pow
 
 fun getInputReader(fileName: String): InputStreamReader =  fileName.getInputFile().inputStream().reader()
 fun readLines(fileName: String) = fileName.getInputFile().readLines()
@@ -27,3 +28,5 @@ fun <T> List<T>.split(predicate: (T) -> Boolean): List<List<T>> {
 data class Position(val x: Int, val y: Int) {
     operator fun plus(p: Position) = Position(x + p.x, y + p.y)
 }
+
+fun Int.pow(exp: Int) = this.toDouble().pow(exp.toDouble()).toInt()
